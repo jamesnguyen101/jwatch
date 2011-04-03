@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.jwatch</groupId>
+    <artifactId>jwatch</artifactId>
+    <packaging>jar</packaging>
+    <version>0.1</version>
+    <name>jwatch</name>
+    <url>http://maven.apache.org</url>
+
+    <developers>
+        <developer>
+            <id>royrusso</id>
+            <name>Roy</name>
+            <url>http://www.royrusso.com</url>
+            <organizationUrl>https://code.google.com/p/jwatch/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+    </developers>
+
+    <!--    <scm>
+        <connection>scm:svn:http://jwatch.googlecode.com/svn/tags/jpoxy-0.1</connection>
+        <developerConnection>scm:svn:https://jwatch.googlecode.com/svn/tags/jpoxy-0.1</developerConnection>
+        <url>http://jwatch.googlecode.com/svn/tags/jwatch-0.1</url>
+    </scm>-->
+
+    <distributionManagement>
+        <repository>
+            <id>jwatch-webdav-repo</id>
+            <name>jwatch repository</name>
+            <url>dav:https://jwatch.googlecode.com/svn/maven/repo/</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20090211</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jboss</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</project>
