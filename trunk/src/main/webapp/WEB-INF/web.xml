@@ -6,7 +6,7 @@
          metadata-complete="true">
     <servlet>
         <servlet-name>JWatchUIServlet</servlet-name>
-        <servlet-class>org.jwatch.servlet.JWatchServlet</servlet-class>
+        <servlet-class>org.jwatch.servlet.JWatchUIServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>JWatchWSServlet</servlet-name>
@@ -28,6 +28,6 @@
 
 
     <listener>
-        <listener-class>org.jwatch.domain.settings.SettingsLoaderListener</listener-class>
+        <listener-class>org.jwatch.listener.settings.SettingsLoaderListener</listener-class>
     </listener>
 </web-app>

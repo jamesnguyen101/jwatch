@@ -56,7 +56,7 @@ public class JWatchWSServlet  extends HttpServlet
          map.put("java.naming.factory.initial",
                  RegistryContextFactory.class.getName());
          JMXConnector connector = JMXConnectorFactory
-               .connect(new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:9211/jmxrmi"));
+               .connect(new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:2911/jmxrmi"));
          mbsc = connector.getMBeanServerConnection();
 
          System.out.println("\nDomains:");
