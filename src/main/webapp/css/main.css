@@ -1,0 +1,27 @@
+body {
+    font-family: 'lucida grande', tahoma, arial, sans-serif;
+    font-size: 11px;
+}
+
+a {
+    color: #15428B;
+}
+
+a:link, a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#headerDiv {
+    background: #7F99BE url(../images/header-bg.gif) repeat-x center;
+}
+
+#headerDiv h1 {
+    font-size: 16px;
+    color: #fff;
+    font-weight: normal;
+    padding: 5px 10px;
+}
