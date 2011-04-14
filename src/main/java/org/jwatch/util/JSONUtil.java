@@ -1,9 +1,29 @@
-/*
- 
-*/
+/**
+ * JWatch - Quartz Monitor: http://code.google.com/p/jwatch/
+ * Copyright (C) 2011 Roy Russo and the original author or authors.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ **/
 package org.jwatch.util;
 
+import net.sf.json.JSONObject;
+import org.jwatch.util.Response;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,5 +48,34 @@ public class JSONUtil
          }
       }
       return returnMap;
+   }
+
+   public static JSONObject buildError(String message)
+   {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, false);
+      jsonObject.put(GlobalConstants.JSON_MESSAGE, message);
+      return jsonObject;
+   }
+
+   public static JSONObject fromResponseToJSON(Response response)
+   {
+      JSONObject jsonObject = new JSONObject();
+
+      jsonObject.put(GlobalConstants.JSON_MESSAGE, response.getSMessage());
+      jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, response.isSuccess());
+      Object o = response.getObject();
+      if (o instanceof ArrayList)
+      {
+         // TODO: loop and build a JSONArray.
+         // TODO: Maybe deal with Map types or generic collections?
+      }
+      else
+      {
+         // assume bean with no cyclical dependencies for now.
+         JSONObject object = JSONObject.fromObject(o);
+         jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, object);
+      }
+      return jsonObject;
    }
 }

@@ -1,13 +1,29 @@
-/*
- 
-*/
+/**
+ * JWatch - Quartz Monitor: http://code.google.com/p/jwatch/
+ * Copyright (C) 2011 Roy Russo and the original author or authors.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ **/
 package org.jwatch.util;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.listener.settings.QuartzConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -97,7 +113,7 @@ public class SettingsUtil
       return instances;
    }
 
-   public static void saveConfig(List<QuartzInstance> instances, String configFilePath)
+   public static void saveConfig(List<QuartzConfig> configs, String configFilePath)
    {
       FileOutputStream fileOutputStream = null;
       try
@@ -107,7 +123,7 @@ public class SettingsUtil
          XStream xStream = new XStream(new JettisonMappedXmlDriver());
          xStream.setMode(XStream.NO_REFERENCES);
          xStream.alias(GlobalConstants.JSON_DATA_ROOT_KEY, ArrayList.class);
-         xStream.toXML(instances, fileOutputStream);
+         xStream.toXML(configs, fileOutputStream);
       }
       catch (Throwable t)
       {
@@ -124,8 +140,15 @@ public class SettingsUtil
          }
          catch (IOException ioe)
          {
-            log.error("Unable to close config file handle at " + configFilePath, ioe);
+            log.error(GlobalConstants.MESSAGE_ERR_CLOSE_CONFIG + " " + configFilePath, ioe);
          }
       }
+   }
+
+   public static void saveConfig(QuartzConfig quartzConfig)
+   {
+      List instances = loadConfig();
+      instances.add(quartzConfig);
+      saveConfig(instances, getConfigPath());
    }
 }

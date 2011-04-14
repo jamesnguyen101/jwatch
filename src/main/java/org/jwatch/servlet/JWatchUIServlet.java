@@ -1,13 +1,29 @@
-/*
- 
-*/
+/**
+ * JWatch - Quartz Monitor: http://code.google.com/p/jwatch/
+ * Copyright (C) 2011 Roy Russo and the original author or authors.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ **/
 package org.jwatch.servlet;
 
 import org.apache.commons.lang.StringUtils;
-import org.jwatch.util.JSONUtil;
+import org.apache.log4j.Logger;
 import org.jwatch.handler.QuartzInstanceHandler;
+import org.jwatch.util.JSONUtil;
 
-import javax.management.MBeanServerConnection;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,16 +33,22 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 /**
+ * Calls handler layer based on specific commans passed-in through GEt/POST that map to {@link org.jwatch.servlet.ActionConstants}.
+ * Currently, all responses are in JSON format. The handler layer is flexible enough to support other response types
+ * in the future, as it standardizes on {@link org.jwatch.util.Response}.
+ * <p/>
+ * TODO: This thing needs to be replaced by something like jpoxy, or maintenance will be costly.
+ *
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 4, 2011 9:29:14 AM
  */
 public class JWatchUIServlet extends HttpServlet
 {
-   protected MBeanServerConnection mbsc = null;
+   static Logger log = Logger.getLogger(JWatchUIServlet.class);
 
    public final void init(ServletConfig servletConfig) throws ServletException
    {
-      System.out.println("******************************");
+      log.info("******************************");
    }
 
    public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -38,7 +60,6 @@ public class JWatchUIServlet extends HttpServlet
    public void doPost(HttpServletRequest req, HttpServletResponse res)
          throws ServletException
    {
-
       String subject = StringUtils.trimToNull(req.getParameter("action"));
 
       if (subject != null)
@@ -53,6 +74,16 @@ public class JWatchUIServlet extends HttpServlet
             {
                Map map = JSONUtil.convertRequestToMap(req);
                returnO = QuartzInstanceHandler.getInstances();
+            }
+            else if (subject.equalsIgnoreCase(ActionConstants.CREATE_INSTANCE))
+            {
+               Map map = JSONUtil.convertRequestToMap(req);
+               returnO = QuartzInstanceHandler.createInstance(map);
+            }
+            else if (subject.equalsIgnoreCase(ActionConstants.LOAD_INSTANCE_DETAILS))
+            {
+               Map map = JSONUtil.convertRequestToMap(req);
+               returnO = QuartzInstanceHandler.getInstanceDetails(map);
             }
 
             out.print(returnO);

@@ -1,37 +1,36 @@
-/*
- 
-*/
+/**
+ * JWatch - Quartz Monitor: http://code.google.com/p/jwatch/
+ * Copyright (C) 2011 Roy Russo and the original author or authors.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ **/
 package org.jwatch.rest;
 
-import com.sun.jndi.rmi.registry.RegistryContextFactory;
-
+import javax.management.MBeanServerConnection;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.JMX;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.CompositeData;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.Map;
-
-import org.quartz.core.jmx.QuartzSchedulerMBean;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 4, 2011 3:42:08 PM
  */
-public class JWatchWSServlet  extends HttpServlet
+public class JWatchWSServlet extends HttpServlet
 {
    protected MBeanServerConnection mbsc = null;
 
@@ -51,7 +50,7 @@ public class JWatchWSServlet  extends HttpServlet
    {
       try
       {
-         HashMap<String, String> map =
+/*         HashMap<String, String> map =
                new HashMap<String, String>();
          map.put("java.naming.factory.initial",
                  RegistryContextFactory.class.getName());
@@ -95,7 +94,7 @@ public class JWatchWSServlet  extends HttpServlet
             }
             System.out.println();
          }
-         connector.close();
+         connector.close();*/
       }
       catch (Exception e)
       {

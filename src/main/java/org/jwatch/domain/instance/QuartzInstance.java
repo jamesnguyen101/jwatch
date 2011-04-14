@@ -1,86 +1,86 @@
-/*
- 
-*/
+/**
+ * JWatch - Quartz Monitor: http://code.google.com/p/jwatch/
+ * Copyright (C) 2011 Roy Russo and the original author or authors.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ **/
 package org.jwatch.domain.instance;
+
+import org.jwatch.domain.adapter.QuartzJMXAdapter;
+import org.jwatch.listener.settings.QuartzConfig;
+
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 6, 2011 4:57:14 PM
  */
-public class QuartzInstance
+public class QuartzInstance extends QuartzConfig
 {
-   private String uuid;
-   private String host;
-   private int port;
-   private String userName;
-   private String password;
+   private MBeanServerConnection mBeanServerConnection;
+   private ObjectName objectName;
+   private QuartzJMXAdapter jmxAdapter;
 
    public QuartzInstance(String uuid, String host, int port, String userName, String password)
    {
-      this.uuid = uuid;
-      this.host = host;
-      this.port = port;
-      this.userName = userName;
-      this.password = password;
+      super(uuid, host, port, userName, password);
    }
 
-   public String getUuid()
+   public QuartzInstance(QuartzConfig config)
    {
-      return uuid;
+      super(config.getUuid(), config.getHost(), config.getPort(), config.getUserName(), config.getPassword());
    }
 
-   public void setUuid(String uuid)
+   public MBeanServerConnection getMBeanServerConnection()
    {
-      this.uuid = uuid;
+      return mBeanServerConnection;
    }
 
-   public String getHost()
+   public void setMBeanServerConnection(MBeanServerConnection mBeanServerConnection)
    {
-      return host;
+      this.mBeanServerConnection = mBeanServerConnection;
    }
 
-   public void setHost(String host)
+   public ObjectName getObjectName()
    {
-      this.host = host;
+      return objectName;
    }
 
-   public int getPort()
+   public void setObjectName(ObjectName objectName)
    {
-      return port;
+      this.objectName = objectName;
    }
 
-   public void setPort(int port)
+   public QuartzJMXAdapter getJmxAdapter()
    {
-      this.port = port;
+      return jmxAdapter;
    }
 
-   public String getUserName()
+   public void setJmxAdapter(QuartzJMXAdapter jmxAdapter)
    {
-      return userName;
+      this.jmxAdapter = jmxAdapter;
    }
 
-   public void setUserName(String userName)
+   @Override
+   public String toString()
    {
-      this.userName = userName;
+      return "QuartzInstance{" +
+             "mBeanServerConnection=" + mBeanServerConnection +
+             ", objectName=" + objectName +
+             "} " + super.toString();
    }
-
-   public String getPassword()
-   {
-      return password;
-   }
-
-   public void setPassword(String password)
-   {
-      this.password = password;
-   }@Override
-    public String toString()
-{
-   return "QuartzInstance{" +
-          "uuid='" + uuid + '\'' +
-          ", host='" + host + '\'' +
-          ", port=" + port +
-          ", userName='" + userName + '\'' +
-          ", password='" + password + '\'' +
-          '}';
-}
 }

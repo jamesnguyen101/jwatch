@@ -1,13 +1,29 @@
-/*
- 
-*/
+/**
+ * JWatch - Quartz Monitor: http://code.google.com/p/jwatch/
+ * Copyright (C) 2011 Roy Russo and the original author or authors.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301 USA
+ **/
 package org.jwatch.listener.settings;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.instance.QuartzInstance;
-import org.jwatch.domain.instance.QuartzInstanceMap;
+import org.jwatch.domain.instance.QuartzInstanceService;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.SettingsUtil;
 import org.jwatch.util.Tools;
@@ -35,8 +51,8 @@ public class SettingsLoaderListener implements ServletContextListener
          log.info("Starting Settings Load...");
          long start = Calendar.getInstance().getTimeInMillis();
 
-         QuartzInstanceMap.initQuartzInstanceMap();
-
+         QuartzInstanceService.initQuartzInstanceMap();
+         
          long end = Calendar.getInstance().getTimeInMillis();
          log.info("Settings startup completed in: " + (end - start) + " ms");
       }
@@ -51,38 +67,4 @@ public class SettingsLoaderListener implements ServletContextListener
       // TODO: maybe some sort of file handle close calls here?
       log.info("Shutting down SettingsLoaderListener service...");
    }
-
-   public static void main(String[] args)
-   {
-      try
-      {
-         QuartzInstance quartzInstance = new QuartzInstance(Tools.generateUUID(), "localhost", 11, null, null);
-         QuartzInstance quartzInstance2 = new QuartzInstance(Tools.generateUUID(), "localhost1", 12, "foo", null);
-         QuartzInstance quartzInstance3 = new QuartzInstance(Tools.generateUUID(), "localhost2", 13, null, "bar");
-         List list = new ArrayList();
-         list.add(quartzInstance);
-         list.add(quartzInstance2);
-         list.add(quartzInstance3);
-         XStream xStream = new XStream(new JettisonMappedXmlDriver());
-         xStream.setMode(XStream.NO_REFERENCES);
-         xStream.alias(GlobalConstants.JSON_DATA_ROOT_KEY, ArrayList.class);
-         String json = xStream.toXML(list);
-         System.out.println(json);
-
-         SettingsUtil.saveConfig(list, SettingsUtil.getConfigPath());
-
-         xStream.alias(GlobalConstants.JSON_DATA_ROOT_KEY, ArrayList.class);
-         List instances = SettingsUtil.loadConfig();
-         for (int i = 0; i < instances.size(); i++)
-         {
-            QuartzInstance instance = (QuartzInstance) instances.get(i);
-            System.out.println(instance);
-         }
-      }
-      catch (Throwable t)
-      {
-         log.error(t);
-      }
-   }
-
 }

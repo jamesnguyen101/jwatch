@@ -1,6 +1,6 @@
 body {
-    font-family: 'lucida grande', tahoma, arial, sans-serif;
-    font-size: 11px;
+    font-family: Arial, Verdana, Helvetica, Tahoma, sans-serif;
+    font-size: 12px;
 }
 
 a {
@@ -16,7 +16,7 @@ a:hover {
 }
 
 #headerDiv {
-    background: #7F99BE url(../images/header-bg.gif) repeat-x center;
+    background: #7F99BE url( ../images/header-bg.gif ) repeat-x center;
 }
 
 #headerDiv h1 {
@@ -25,3 +25,37 @@ a:hover {
     font-weight: normal;
     padding: 5px 10px;
 }
+
+/********************** Ext JS Components **************************/
+
+/* Notifications popup alerts */
+.x-notification .x-window-body {
+    margin: 0;
+    padding: 1em ! important;
+    width: auto ! important;
+}
+
+.x-notification .x-tool-close {
+    display: none
+}
+
+.x-notification.fixed .x-tool-close {
+    display: block
+}
+
+.icon-n-info {
+    background-image: url( "../images/n-info.png" ) !important;
+}
+
+.icon-n-error {
+    background-image: url( "../images/n-error.png" ) !important;
+}
+
+.icon-n-hint {
+    background-image: url( "../images/n-suggest.png" ) !important;
+}
+
+.panelTitle {
+    font-size: 13px;
+}
+
