@@ -112,16 +112,13 @@
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.0.0</version>
-        </dependency>
+<!--
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jboss</artifactId>
             <version>2.0.0</version>
         </dependency>
+-->
         <dependency>
             <groupId>javax.management</groupId>
             <artifactId>jmx-stdext</artifactId>
