@@ -84,6 +84,11 @@ public class JWatchUIServlet extends HttpServlet
                Map map = JSONUtil.convertRequestToMap(req);
                returnO = QuartzInstanceHandler.getInstanceDetails(map);
             }
+            else if (subject.equalsIgnoreCase(ActionConstants.LOAD_SCHEDULERS))
+            {
+               Map map = JSONUtil.convertRequestToMap(req);
+               returnO = QuartzInstanceHandler.getSchedulersForForQuartzInstance(map);
+            }
 
             out.print(returnO);
             out.flush();

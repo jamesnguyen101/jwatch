@@ -28,4 +28,5 @@ public class ActionConstants
    public static final String LOAD_INSTANCES = "get_all_instances";
    public static final String LOAD_INSTANCE_DETAILS = "get_instance_details";
    public static final String CREATE_INSTANCE = "create_instance";
+   public static final String LOAD_SCHEDULERS = "get_schedulers";
 }

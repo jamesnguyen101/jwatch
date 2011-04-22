@@ -19,32 +19,36 @@
  **/
 package org.jwatch.domain.quartz;
 
+import javax.management.ObjectName;
+
 /**
- * Maps to org.quartz.Scheduler interface.
+ * Maps to org.quartz.Scheduler interface (somewhat).
  *
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 13, 2011 4:16:22 PM
  */
 public class Scheduler
 {
-   private String instanceUUID;
+   private String quartzInstanceUUID;
    private String name;
+   private ObjectName objectName;
    private String instanceId;
    private boolean started;
    private boolean shutdown;
    private boolean standByMode;
    private String version;
    private String jobStoreClassName;
+   private String threadPoolClassName;
    private int threadPoolSize;
 
-   public String getInstanceUUID()
+   public String getQuartzInstanceUUID()
    {
-      return instanceUUID;
+      return quartzInstanceUUID;
    }
 
-   public void setInstanceUUID(String instanceUUID)
+   public void setQuartzInstanceUUID(String quartzInstanceUUID)
    {
-      this.instanceUUID = instanceUUID;
+      this.quartzInstanceUUID = quartzInstanceUUID;
    }
 
    public String getName()
@@ -70,6 +74,16 @@ public class Scheduler
    public boolean isStarted()
    {
       return started;
+   }
+
+   public ObjectName getObjectName()
+   {
+      return objectName;
+   }
+
+   public void setObjectName(ObjectName objectName)
+   {
+      this.objectName = objectName;
    }
 
    public void setStarted(boolean started)
@@ -115,6 +129,16 @@ public class Scheduler
    public void setJobStoreClassName(String jobStoreClassName)
    {
       this.jobStoreClassName = jobStoreClassName;
+   }
+
+   public String getThreadPoolClassName()
+   {
+      return threadPoolClassName;
+   }
+
+   public void setThreadPoolClassName(String threadPoolClassName)
+   {
+      this.threadPoolClassName = threadPoolClassName;
    }
 
    public int getThreadPoolSize()

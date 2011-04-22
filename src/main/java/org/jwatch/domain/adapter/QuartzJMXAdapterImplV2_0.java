@@ -19,13 +19,19 @@
  **/
 package org.jwatch.domain.adapter;
 
+import org.apache.log4j.Logger;
+import org.jwatch.domain.connection.QuartzConnectUtil;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.quartz.Scheduler;
+import org.jwatch.util.GlobalConstants;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
@@ -33,17 +39,24 @@ import javax.management.MBeanOperationInfo;
  */
 public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
 {
+   static Logger log = Logger.getLogger(QuartzJMXAdapterImplV2_0.class);
+
    @Override
-   public String getVersion(QuartzInstanceConnection quartzInstanceConnection) throws Exception
+   public String getVersion(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
    {
-      String quartzVersion = (String) quartzInstanceConnection.getMBeanServerConnection().getAttribute(quartzInstanceConnection.getObjectName(), "Version");
+      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      String quartzVersion = (String) connection.getAttribute(objectName, "Version");
+      if (!QuartzConnectUtil.isSupported(quartzVersion))
+      {
+         log.error(GlobalConstants.MESSAGE_WARN_VERSION + " Version:" + quartzVersion);
+      }
       return quartzVersion;
    }
 
    @Override
-   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection) throws Exception
+   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanAttributeInfo[] attributeInfos = info.getAttributes();
       for (int i = 0; i < attributeInfos.length; i++)
       {
@@ -52,9 +65,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection) throws Exception
+   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanConstructorInfo[] arr = info.getConstructors();
       for (int i = 0; i < arr.length; i++)
       {
@@ -63,9 +76,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printOperations(QuartzInstanceConnection quartzInstanceConnection) throws Exception
+   public void printOperations(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanOperationInfo[] arr = info.getOperations();
       for (int i = 0; i < arr.length; i++)
       {
@@ -74,9 +87,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection) throws Exception
+   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanNotificationInfo[] arr = info.getNotifications();
       for (int i = 0; i < arr.length; i++)
       {
@@ -86,9 +99,28 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    }
 
    @Override
-   public void printClassName(QuartzInstanceConnection quartzInstanceConnection) throws Exception
+   public void printClassName(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
       System.out.println(info.getClassName() + " Desc: " + info.getDescription());
+   }
+
+   @Override
+   public Scheduler populateScheduler(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   {
+      Scheduler scheduler = new Scheduler();
+      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      scheduler.setObjectName(objectName);
+      scheduler.setName((String) connection.getAttribute(objectName, "SchedulerName"));
+      scheduler.setInstanceId((String) connection.getAttribute(objectName, "SchedulerInstanceId"));
+      scheduler.setJobStoreClassName((String) connection.getAttribute(objectName, "JobStoreClassName"));
+      scheduler.setThreadPoolClassName((String) connection.getAttribute(objectName, "ThreadPoolClassName"));
+      scheduler.setThreadPoolSize((Integer) connection.getAttribute(objectName, "ThreadPoolSize"));
+      scheduler.setShutdown((Boolean) connection.getAttribute(objectName, "Shutdown"));
+      scheduler.setStarted((Boolean) connection.getAttribute(objectName, "Started"));
+      scheduler.setStandByMode((Boolean) connection.getAttribute(objectName, "StandbyMode"));
+      scheduler.setQuartzInstanceUUID(quartzInstanceConnection.getUuid());
+      scheduler.setVersion(this.getVersion(quartzInstanceConnection, objectName));
+      return scheduler;
    }
 }
