@@ -23,12 +23,11 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jwatch.domain.adapter.QuartzJMXAdapter;
-import org.jwatch.domain.adapter.QuartzJMXAdapterFactory;
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.instance.QuartzInstanceConnectionService;
+import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.JSONUtil;
@@ -115,7 +114,7 @@ public class QuartzInstanceHandler
          {
             QuartzConfig quartzConfig = new QuartzConfig(Tools.generateUUID(), host, port, username, password);
             QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-            List<QuartzInstanceConnection> quartzInstanceConnection = quartzConnectService.initInstance(quartzConfig);
+            QuartzInstanceConnection quartzInstanceConnection = quartzConnectService.initInstance(quartzConfig);
             if (quartzInstanceConnection == null)
             {
                log.error(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
@@ -124,15 +123,8 @@ public class QuartzInstanceHandler
             }
 
             // persist
-            if (quartzInstanceConnection != null && quartzInstanceConnection.size() > 0)
-            {
-               for (int i = 0; i < quartzInstanceConnection.size(); i++)
-               {
-                  QuartzInstanceConnection instanceConnection = quartzInstanceConnection.get(i);
-                  QuartzInstanceConnectionService.putQuartzInstance(instanceConnection);
-               }
-               SettingsUtil.saveConfig(quartzConfig);
-            }
+            QuartzInstanceConnectionService.putQuartzInstance(quartzInstanceConnection);
+            SettingsUtil.saveConfig(quartzConfig);
             jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, quartzConfig);
             jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
          }
@@ -155,10 +147,51 @@ public class QuartzInstanceHandler
       return jsonObject;
    }
 
+   /**
+    * Given a Quartz Instance id, it will load the schedulers associated with it from the in-memory map.
+    *
+    * @param map
+    * @return
+    */
+   public static JSONObject getSchedulersForForQuartzInstance(Map map)
+   {
+      JSONObject jsonObject = new JSONObject();
+      JSONArray jsonArray = new JSONArray();
+      String qiid = StringUtils.trimToNull((String) map.get("uuid"));
+      try
+      {
+         QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
+         if (quartzInstanceConnection != null)
+         {
+            int totalCount = 0;
+            List<Scheduler> schedulers = quartzInstanceConnection.getSchedulerList();
+            if (schedulers != null && schedulers.size() > 0)
+            {
+               totalCount = schedulers.size();
+               for (int i = 0; i < schedulers.size(); i++)
+               {
+                  Scheduler scheduler = schedulers.get(i);
+                  JSONObject o = JSONObject.fromObject(scheduler);
+                  jsonArray.add(o);
+               }
+            }
+            jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
+            jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, jsonArray);
+            jsonObject.put(GlobalConstants.JSON_TOTAL_COUNT, totalCount);
+         }
+      }
+      catch (Throwable t)
+      {
+         log.error(t);
+         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_CHECK_LOG);
+      }
+      return jsonObject;
+   }
+
    public static JSONObject getInstanceDetails(Map map)
    {
       JSONObject jsonObject = new JSONObject();
-      String qiid = StringUtils.trimToNull((String) map.get("uuid"));
+/*      String qiid = StringUtils.trimToNull((String) map.get("uuid"));
       try
       {
          QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
@@ -172,7 +205,7 @@ public class QuartzInstanceHandler
       {
          log.error(t);
          jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_CHECK_LOG);
-      }
+      }*/
       return jsonObject;
    }
 }

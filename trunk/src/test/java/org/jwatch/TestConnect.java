@@ -7,6 +7,7 @@ import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
 import org.jwatch.domain.connection.QuartzConnectUtil;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.notification.Listener;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.Tools;
@@ -28,38 +29,29 @@ public class TestConnect
       {
          QuartzConfig config = new QuartzConfig(Tools.generateUUID(), "localhost", 2911, null, null);
          QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-         List<QuartzInstanceConnection> connections = quartzConnectService.initInstance(config);
-         if (connections != null && connections.size() > 0)
+         QuartzInstanceConnection quartzInstanceConnection = quartzConnectService.initInstance(config);
+         if (quartzInstanceConnection != null)
          {
-            for (int i = 0; i < connections.size(); i++)
+            List shList = quartzInstanceConnection.getSchedulerList();
+            if (shList != null && shList.size() > 0)
             {
-               QuartzInstanceConnection quartzInstanceConnection = connections.get(i);
-               QuartzConnectUtil.printMBeanProperties(quartzInstanceConnection);
-
-               MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
-               ObjectName objectName = quartzInstanceConnection.getObjectName();
-
-               Listener listener = new Listener();
-               connection.addNotificationListener(objectName, listener, null, null);
-
-               List groupNames = (List) connection.getAttribute(objectName, "JobGroupNames");
-               TabularData cdata = (TabularData) connection.getAttribute(objectName, "CurrentlyExecutingJobs");
-               TabularData jdata = (TabularData) connection.getAttribute(objectName, "AllJobDetails");
-               List tdata = (List) connection.getAttribute(objectName, "AllTriggers");
-               String sid = (String) connection.getAttribute(objectName, "SchedulerInstanceId");
-               for (int j = 0; j < groupNames.size(); j++)
+               for (int i = 0; i < shList.size(); i++)
                {
-                  String groupName = (String) groupNames.get(j);
-                  //List<String> jobNames = (List) connection.getAttribute(objectName, "getJobNames");
-                  //Object jmxResult = connection.invoke(objectName, "getAllJobDetails", new Object[] { sid }, new String[] { String.class.getName() });
-/*            for (int j = 0; j < jobNames.size(); j++)
-            {
-               String jobName = jobNames.get(j);
-               CompositeData data = (CompositeData) connection.getAttribute(objectName, "getJobDetail");
+                  Scheduler scheduler = (Scheduler) shList.get(i);
 
-               System.out.println();
-            }*/
-                  System.out.println();
+                  QuartzConnectUtil.printMBeanProperties(quartzInstanceConnection, scheduler.getObjectName());
+
+                  MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+                  ObjectName objectName = scheduler.getObjectName();
+
+                  Listener listener = new Listener();
+                  connection.addNotificationListener(objectName, listener, null, null);
+
+                  List groupNames = (List) connection.getAttribute(objectName, "JobGroupNames");
+                  TabularData cdata = (TabularData) connection.getAttribute(objectName, "CurrentlyExecutingJobs");
+                  TabularData jdata = (TabularData) connection.getAttribute(objectName, "AllJobDetails");
+                  List tdata = (List) connection.getAttribute(objectName, "AllTriggers");
+                  String sid = (String) connection.getAttribute(objectName, "SchedulerInstanceId");
                }
             }
          }

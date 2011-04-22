@@ -46,5 +46,5 @@ public interface QuartzConnectService
     * @throws IOException
     * @throws MalformedObjectNameException
     */
-   public List<QuartzInstanceConnection> initInstance(QuartzConfig config) throws Exception;
+   public QuartzInstanceConnection initInstance(QuartzConfig config) throws Exception;
 }

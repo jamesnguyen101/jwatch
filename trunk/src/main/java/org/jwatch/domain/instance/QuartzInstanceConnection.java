@@ -20,13 +20,16 @@
 package org.jwatch.domain.instance;
 
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
+import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.settings.QuartzConfig;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import java.util.List;
 
 /**
- * Represents a Quartz Instance on a server. A server can have more than one QuartzInstance. This object is kept in mem
+ * Represents a Scheduler on a Quartz Instance. A server can have more than one QuartzInstance. One Quartz Instance can have many Schedulers.
+ * This object is kept in mem
  * for easy fetching {@link org.jwatch.listener.settings.QuartzConfig}, thus avoiding having to instantiate a JMX
  * connection for every call.
  *
@@ -36,8 +39,9 @@ import javax.management.ObjectName;
 public class QuartzInstanceConnection extends QuartzConfig
 {
    private MBeanServerConnection mBeanServerConnection;
-   private ObjectName objectName;
+
    private QuartzJMXAdapter jmxAdapter;
+   private List<Scheduler> schedulerList;
 
    public QuartzInstanceConnection(String uuid, String host, int port, String userName, String password)
    {
@@ -59,16 +63,6 @@ public class QuartzInstanceConnection extends QuartzConfig
       this.mBeanServerConnection = mBeanServerConnection;
    }
 
-   public ObjectName getObjectName()
-   {
-      return objectName;
-   }
-
-   public void setObjectName(ObjectName objectName)
-   {
-      this.objectName = objectName;
-   }
-
    public QuartzJMXAdapter getJmxAdapter()
    {
       return jmxAdapter;
@@ -79,16 +73,29 @@ public class QuartzInstanceConnection extends QuartzConfig
       this.jmxAdapter = jmxAdapter;
    }
 
+   public List<Scheduler> getSchedulerList()
+   {
+      return schedulerList;
+   }
+
+   public void setSchedulerList(List<Scheduler> schedulerList)
+   {
+      this.schedulerList = schedulerList;
+   }
+
    @Override
    public String toString()
    {
-      return "QuartzInstanceConnection{" +
-             "mBeanServerConnection=" + mBeanServerConnection +
-             ", objectName=" + objectName +
-             "} " + super.toString();
+      final StringBuilder sb = new StringBuilder();
+      sb.append("QuartzInstanceConnection");
+      sb.append("{mBeanServerConnection=").append(mBeanServerConnection);
+      sb.append(", jmxAdapter=").append(jmxAdapter);
+      sb.append(", schedulerList=").append(schedulerList);
+      sb.append('}');
+      return sb.toString();
    }
 
-   /*
+/*
 MBeanAttributeInfo[description=Attribute exposed for management, name=Version, type=java.lang.String, read-only, descriptor={}]
 MBeanAttributeInfo[description=Attribute exposed for management, name=Shutdown, type=boolean, read-only, isIs, descriptor={}]
 MBeanAttributeInfo[description=Attribute exposed for management, name=Started, type=boolean, read-only, isIs, descriptor={}]

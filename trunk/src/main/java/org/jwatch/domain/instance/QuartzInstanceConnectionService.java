@@ -81,10 +81,10 @@ public class QuartzInstanceConnectionService
          {
             QuartzConfig config = configs.get(i);
             QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-            List<QuartzInstanceConnection> instanceConnections = null;
+            QuartzInstanceConnection quartzInstanceConnection = null;
             try
             {
-               instanceConnections = quartzConnectService.initInstance(config);
+               quartzInstanceConnection = quartzConnectService.initInstance(config);
                config.setConnected(true);
                SettingsUtil.saveConfig(config);
             }
@@ -93,14 +93,10 @@ public class QuartzInstanceConnectionService
                log.error("Failed to connect! " + config.toString(), t);
             }
 
-            if (instanceConnections != null && instanceConnections.size() > 0)
+            if (quartzInstanceConnection != null)
             {
-               for (int j = 0; j < instanceConnections.size(); j++)
-               {
-                  QuartzInstanceConnection instanceConnection = instanceConnections.get(j);
-                  QuartzInstanceConnectionService.putQuartzInstance(instanceConnection);
-                  log.debug(instanceConnection.toString());
-               }
+               QuartzInstanceConnectionService.putQuartzInstance(quartzInstanceConnection);
+               log.debug(quartzInstanceConnection.toString());
             }
          }
       }

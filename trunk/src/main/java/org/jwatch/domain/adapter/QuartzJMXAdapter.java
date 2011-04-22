@@ -23,6 +23,8 @@ package org.jwatch.domain.adapter;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.quartz.Scheduler;
 
+import javax.management.ObjectName;
+
 /**
  * TODO: implement this across other quartz versions.
  *
@@ -31,17 +33,19 @@ import org.jwatch.domain.quartz.Scheduler;
  */
 public interface QuartzJMXAdapter
 {
-   public String getVersion(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+   public String getVersion(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
    //public Scheduler getScheduler
 
-   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
-   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
-   public void printOperations(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+   public void printOperations(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
-   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
-   void printClassName(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+   void printClassName(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+
+   Scheduler populateScheduler(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 }

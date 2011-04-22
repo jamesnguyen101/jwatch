@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
 import org.jwatch.domain.adapter.QuartzJMXAdapterFactory;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
 
@@ -48,11 +49,9 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
    /**
     * {@inheritDoc}
     */
-   public List<QuartzInstanceConnection> initInstance(QuartzConfig config) throws Exception
+   @Override
+   public QuartzInstanceConnection initInstance(QuartzConfig config) throws Exception
    {
-      List<QuartzInstanceConnection> instanceConnections = new ArrayList();
-
-
       // create url / add credentials map
       Map<String, String[]> env = new HashMap<String, String[]>();
       env.put(JMXConnector.CREDENTIALS, new String[]{config.getUserName(), config.getPassword()});
@@ -63,22 +62,21 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
       // test connection
       ObjectName mBName = new ObjectName("quartz:type=QuartzScheduler,*");
       Set<ObjectName> names = connection.queryNames(mBName, null);
-      for (ObjectName objectName : names)
-      {
-         QuartzInstanceConnection quartzInstanceConnection = new QuartzInstanceConnection(config);
-         quartzInstanceConnection.setMBeanServerConnection(connection);
-         quartzInstanceConnection.setObjectName(objectName);
+      QuartzInstanceConnection quartzInstanceConnection = new QuartzInstanceConnection(config);
+      quartzInstanceConnection.setMBeanServerConnection(connection);
 
+      List<Scheduler> schList = new ArrayList<Scheduler>();
+      for (ObjectName objectName : names)   // for each scheduler.
+      {
+         // TODO: need to not do this for every Scheduler 
          QuartzJMXAdapter jmxAdapter = QuartzJMXAdapterFactory.initQuartzJMXAdapter(objectName, connection);
          quartzInstanceConnection.setJmxAdapter(jmxAdapter);
-         String v = jmxAdapter.getVersion(quartzInstanceConnection);
-         if (!QuartzConnectUtil.isSupported(v))
-         {
-            log.error(GlobalConstants.MESSAGE_WARN_VERSION + " Version:" + v);
-         }
-         instanceConnections.add(quartzInstanceConnection);
+
+         Scheduler scheduler = jmxAdapter.populateScheduler(quartzInstanceConnection, objectName);
+         schList.add(scheduler);
       }
-      return instanceConnections;
+      quartzInstanceConnection.setSchedulerList(schList);
+      return quartzInstanceConnection;
    }
 
 

@@ -24,6 +24,7 @@ import org.jwatch.domain.adapter.QuartzJMXAdapter;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.listener.settings.QuartzConfig;
 
+import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 import java.net.MalformedURLException;
 
@@ -63,16 +64,16 @@ public class QuartzConnectUtil
     *
     * @param quartzInstanceConnection
     */
-   public static void printMBeanProperties(QuartzInstanceConnection quartzInstanceConnection)
+   public static void printMBeanProperties(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName)
    {
       try
       {
          QuartzJMXAdapter adapter = quartzInstanceConnection.getJmxAdapter();
-         adapter.printAttributes(quartzInstanceConnection);
-         adapter.printConstructors(quartzInstanceConnection);
-         adapter.printOperations(quartzInstanceConnection);
-         adapter.printNotifications(quartzInstanceConnection);
-         adapter.printClassName(quartzInstanceConnection);
+         adapter.printAttributes(quartzInstanceConnection, objectName);
+         adapter.printConstructors(quartzInstanceConnection, objectName);
+         adapter.printOperations(quartzInstanceConnection, objectName);
+         adapter.printNotifications(quartzInstanceConnection, objectName);
+         adapter.printClassName(quartzInstanceConnection, objectName);
       }
       catch (Throwable t)
       {
