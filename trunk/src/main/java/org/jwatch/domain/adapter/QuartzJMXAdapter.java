@@ -20,7 +20,8 @@
 
 package org.jwatch.domain.adapter;
 
-import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.quartz.Scheduler;
 
 /**
  * TODO: implement this across other quartz versions.
@@ -30,15 +31,17 @@ import org.jwatch.domain.instance.QuartzInstance;
  */
 public interface QuartzJMXAdapter
 {
-   public String getVersion(QuartzInstance quartzInstance) throws Exception;
+   public String getVersion(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
 
-   public void printAttributes(QuartzInstance quartzInstance) throws Exception;
+   //public Scheduler getScheduler
 
-   public void printConstructors(QuartzInstance quartzInstance) throws Exception;
+   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
 
-   public void printOperations(QuartzInstance quartzInstance) throws Exception;
+   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
 
-   public void printNotifications(QuartzInstance quartzInstance) throws Exception;
+   public void printOperations(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
 
-   void printClassName(QuartzInstance quartzInstance) throws Exception;
+   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
+
+   void printClassName(QuartzInstanceConnection quartzInstanceConnection) throws Exception;
 }

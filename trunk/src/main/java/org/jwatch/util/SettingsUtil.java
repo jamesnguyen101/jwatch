@@ -71,7 +71,7 @@ public class SettingsUtil
 
    public static List loadConfig()
    {
-      List instances = null;
+      List instances = new ArrayList();
       String configPath = SettingsUtil.getConfigPath();
       InputStream inputStream = null;
       try
@@ -87,10 +87,14 @@ public class SettingsUtil
          {
             inputStream = new FileInputStream(configFile);
          }
-         XStream xStream = new XStream(new JettisonMappedXmlDriver());
-         xStream.setMode(XStream.NO_REFERENCES);
-         xStream.alias(GlobalConstants.JSON_DATA_ROOT_KEY, ArrayList.class);
-         instances = ((List) xStream.fromXML(inputStream));
+
+         if (configFile.length() > 0)
+         {
+            XStream xStream = new XStream(new JettisonMappedXmlDriver());
+            xStream.setMode(XStream.NO_REFERENCES);
+            xStream.alias(GlobalConstants.JSON_DATA_ROOT_KEY, ArrayList.class);
+            instances = ((List) xStream.fromXML(inputStream));
+         }
       }
       catch (Throwable t)
       {

@@ -19,7 +19,7 @@
  **/
 package org.jwatch.domain.adapter;
 
-import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.instance.QuartzInstanceConnection;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
@@ -34,16 +34,16 @@ import javax.management.MBeanOperationInfo;
 public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
 {
    @Override
-   public String getVersion(QuartzInstance quartzInstance) throws Exception
+   public String getVersion(QuartzInstanceConnection quartzInstanceConnection) throws Exception
    {
-      String quartzVersion = (String) quartzInstance.getMBeanServerConnection().getAttribute(quartzInstance.getObjectName(), "Version");
+      String quartzVersion = (String) quartzInstanceConnection.getMBeanServerConnection().getAttribute(quartzInstanceConnection.getObjectName(), "Version");
       return quartzVersion;
    }
 
    @Override
-   public void printAttributes(QuartzInstance quartzInstance) throws Exception
+   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection) throws Exception
    {
-      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(quartzInstance.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
       MBeanAttributeInfo[] attributeInfos = info.getAttributes();
       for (int i = 0; i < attributeInfos.length; i++)
       {
@@ -52,9 +52,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printConstructors(QuartzInstance quartzInstance) throws Exception
+   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection) throws Exception
    {
-      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(quartzInstance.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
       MBeanConstructorInfo[] arr = info.getConstructors();
       for (int i = 0; i < arr.length; i++)
       {
@@ -63,9 +63,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printOperations(QuartzInstance quartzInstance) throws Exception
+   public void printOperations(QuartzInstanceConnection quartzInstanceConnection) throws Exception
    {
-      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(quartzInstance.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
       MBeanOperationInfo[] arr = info.getOperations();
       for (int i = 0; i < arr.length; i++)
       {
@@ -74,9 +74,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printNotifications(QuartzInstance quartzInstance) throws Exception
+   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection) throws Exception
    {
-      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(quartzInstance.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
       MBeanNotificationInfo[] arr = info.getNotifications();
       for (int i = 0; i < arr.length; i++)
       {
@@ -86,9 +86,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    }
 
    @Override
-   public void printClassName(QuartzInstance quartzInstance) throws Exception
+   public void printClassName(QuartzInstanceConnection quartzInstanceConnection) throws Exception
    {
-      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(quartzInstance.getObjectName());
+      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(quartzInstanceConnection.getObjectName());
       System.out.println(info.getClassName() + " Desc: " + info.getDescription());
    }
 }

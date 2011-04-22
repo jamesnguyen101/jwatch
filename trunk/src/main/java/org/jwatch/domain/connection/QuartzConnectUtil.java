@@ -21,15 +21,11 @@ package org.jwatch.domain.connection;
 
 import org.apache.commons.lang.StringUtils;
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
-import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.listener.settings.QuartzConfig;
 
 import javax.management.remote.JMXServiceURL;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.CompositeData;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
@@ -65,18 +61,18 @@ public class QuartzConnectUtil
    /**
     * util method for printing all methods an mbean has exposed.
     *
-    * @param quartzInstance
+    * @param quartzInstanceConnection
     */
-   public static void printMBeanProperties(QuartzInstance quartzInstance)
+   public static void printMBeanProperties(QuartzInstanceConnection quartzInstanceConnection)
    {
       try
       {
-         QuartzJMXAdapter adapter = quartzInstance.getJmxAdapter();
-         adapter.printAttributes(quartzInstance);
-         adapter.printConstructors(quartzInstance);
-         adapter.printOperations(quartzInstance);
-         adapter.printNotifications(quartzInstance);
-         adapter.printClassName(quartzInstance);
+         QuartzJMXAdapter adapter = quartzInstanceConnection.getJmxAdapter();
+         adapter.printAttributes(quartzInstanceConnection);
+         adapter.printConstructors(quartzInstanceConnection);
+         adapter.printOperations(quartzInstanceConnection);
+         adapter.printNotifications(quartzInstanceConnection);
+         adapter.printClassName(quartzInstanceConnection);
       }
       catch (Throwable t)
       {

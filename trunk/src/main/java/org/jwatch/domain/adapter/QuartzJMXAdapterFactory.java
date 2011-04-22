@@ -17,34 +17,30 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA
  **/
-package org.jwatch.domain.connection;
 
-import org.jwatch.domain.instance.QuartzInstanceConnection;
-import org.jwatch.listener.settings.QuartzConfig;
+package org.jwatch.domain.adapter;
 
-import javax.management.MalformedObjectNameException;
-import java.io.IOException;
-import java.util.List;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 /**
- * All JMS connections to Quartz MBeans are handled here.
- * Because we cannot rely on the quartz-jar locally, we have to communicate/find mbean attribs using native JMX calls and
- * not use QuartzSchedulerMBean.
- * <p/>
- * Conection params are persisted in memory in {@link org.jwatch.domain.instance.QuartzInstanceConnectionService#quartzInstanceMap}
- *
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
- *         Date: Apr 9, 2011 9:50:04 AM
+ *         Date: Apr 20, 2011 4:41:37 PM
  */
-public interface QuartzConnectService
+public class QuartzJMXAdapterFactory
 {
    /**
-    * Initializes the connection to a quartzinstance.
+    * Currently creates the v2.0.0 adapter. In the future, we will need to have an adapter map that returns the correct
+    * adapter object to use depending on version.
     *
-    * @param config
+    * @param objectName
+    * @param connection
     * @return
-    * @throws IOException
-    * @throws MalformedObjectNameException
+    * @throws Exception
     */
-   public List<QuartzInstanceConnection> initInstance(QuartzConfig config) throws Exception;
+   public static QuartzJMXAdapter initQuartzJMXAdapter(ObjectName objectName, MBeanServerConnection connection) throws Exception
+   {
+      QuartzJMXAdapter jmxAdapter = new QuartzJMXAdapterImplV2_0();
+      return jmxAdapter;
+   }
 }

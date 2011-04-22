@@ -21,8 +21,8 @@ package org.jwatch.domain.connection;
 
 import org.apache.log4j.Logger;
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
-import org.jwatch.domain.adapter.QuartzJMXAdapterImplV2_0;
-import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.adapter.QuartzJMXAdapterFactory;
+import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
 
@@ -31,8 +31,9 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,9 +48,10 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
    /**
     * {@inheritDoc}
     */
-   public QuartzInstance initInstance(QuartzConfig config) throws Exception
+   public List<QuartzInstanceConnection> initInstance(QuartzConfig config) throws Exception
    {
-      QuartzInstance quartzInstance = new QuartzInstance(config);
+      List<QuartzInstanceConnection> instanceConnections = new ArrayList();
+
 
       // create url / add credentials map
       Map<String, String[]> env = new HashMap<String, String[]>();
@@ -60,37 +62,24 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
 
       // test connection
       ObjectName mBName = new ObjectName("quartz:type=QuartzScheduler,*");
-      Set names = connection.queryNames(mBName, null);
-      Iterator iterator = names.iterator();
-      if (iterator.hasNext())
+      Set<ObjectName> names = connection.queryNames(mBName, null);
+      for (ObjectName objectName : names)
       {
-         ObjectName objectName = (ObjectName) iterator.next();
-         quartzInstance.setMBeanServerConnection(connection);
-         quartzInstance.setObjectName(objectName);
+         QuartzInstanceConnection quartzInstanceConnection = new QuartzInstanceConnection(config);
+         quartzInstanceConnection.setMBeanServerConnection(connection);
+         quartzInstanceConnection.setObjectName(objectName);
 
-         QuartzJMXAdapter jmxAdapter = initQuartzJMXAdapter(objectName, connection);
-         quartzInstance.setJmxAdapter(jmxAdapter);
-         String v = jmxAdapter.getVersion(quartzInstance);
+         QuartzJMXAdapter jmxAdapter = QuartzJMXAdapterFactory.initQuartzJMXAdapter(objectName, connection);
+         quartzInstanceConnection.setJmxAdapter(jmxAdapter);
+         String v = jmxAdapter.getVersion(quartzInstanceConnection);
          if (!QuartzConnectUtil.isSupported(v))
          {
             log.error(GlobalConstants.MESSAGE_WARN_VERSION + " Version:" + v);
          }
+         instanceConnections.add(quartzInstanceConnection);
       }
-      return quartzInstance;
+      return instanceConnections;
    }
 
-   /**
-    * Currently creates the v2.0.0 adapter. In the future, we will need to have an adapter map that returns the correct
-    * adapter object to use depending on version.
-    *
-    * @param objectName
-    * @param connection
-    * @return
-    * @throws Exception
-    */
-   private QuartzJMXAdapter initQuartzJMXAdapter(ObjectName objectName, MBeanServerConnection connection) throws Exception
-   {
-      QuartzJMXAdapter jmxAdapter = new QuartzJMXAdapterImplV2_0();
-      return jmxAdapter;
-   }
+
 }

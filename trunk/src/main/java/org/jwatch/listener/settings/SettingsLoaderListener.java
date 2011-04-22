@@ -19,20 +19,12 @@
  **/
 package org.jwatch.listener.settings;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import org.apache.log4j.Logger;
-import org.jwatch.domain.instance.QuartzInstance;
-import org.jwatch.domain.instance.QuartzInstanceService;
-import org.jwatch.util.GlobalConstants;
-import org.jwatch.util.SettingsUtil;
-import org.jwatch.util.Tools;
+import org.jwatch.domain.instance.QuartzInstanceConnectionService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Config in web.xml. loads settings file on boot.
@@ -51,7 +43,7 @@ public class SettingsLoaderListener implements ServletContextListener
          log.info("Starting Settings Load...");
          long start = Calendar.getInstance().getTimeInMillis();
 
-         QuartzInstanceService.initQuartzInstanceMap();
+         QuartzInstanceConnectionService.initQuartzInstanceMap();
          
          long end = Calendar.getInstance().getTimeInMillis();
          log.info("Settings startup completed in: " + (end - start) + " ms");

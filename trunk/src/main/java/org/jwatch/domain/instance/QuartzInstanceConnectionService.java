@@ -34,37 +34,37 @@ import java.util.List;
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 7, 2011 5:04:10 PM
  */
-public class QuartzInstanceService
+public class QuartzInstanceConnectionService
 {
-   static Logger log = Logger.getLogger(QuartzInstanceService.class);
+   static Logger log = Logger.getLogger(QuartzInstanceConnectionService.class);
 
-   private static HashMap<String, QuartzInstance> quartzInstanceMap;
+   private static HashMap<String, QuartzInstanceConnection> quartzInstanceMap;
 
-   public static HashMap<String, QuartzInstance> getQuartzInstanceMap()
+   public static HashMap<String, QuartzInstanceConnection> getQuartzInstanceMap()
    {
       return quartzInstanceMap;
    }
 
-   public static void setQuartzInstanceMap(HashMap<String, QuartzInstance> quartzInstanceMap)
+   public static void setQuartzInstanceMap(HashMap<String, QuartzInstanceConnection> quartzInstanceMap)
    {
-      QuartzInstanceService.quartzInstanceMap = quartzInstanceMap;
+      QuartzInstanceConnectionService.quartzInstanceMap = quartzInstanceMap;
    }
 
-   public static void putQuartzInstance(QuartzInstance quartzInstance)
+   public static void putQuartzInstance(QuartzInstanceConnection quartzInstanceConnection)
    {
-      if (quartzInstance != null)
+      if (quartzInstanceConnection != null)
       {
          if (quartzInstanceMap == null)
          {
             quartzInstanceMap = new HashMap();
          }
-         quartzInstanceMap.put(quartzInstance.getUuid(), quartzInstance);
+         quartzInstanceMap.put(quartzInstanceConnection.getUuid(), quartzInstanceConnection);
       }
    }
 
    /**
     * loads configurations from the settings file and attempts connections on each config. It then populates in-memory
-    * map with {@link org.jwatch.domain.instance.QuartzInstance} objects.
+    * map with {@link QuartzInstanceConnection} objects.
     */
    public static void initQuartzInstanceMap()
    {
@@ -81,10 +81,11 @@ public class QuartzInstanceService
          {
             QuartzConfig config = configs.get(i);
             QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-            QuartzInstance instance = null;
+            List<QuartzInstanceConnection> instanceConnections = null;
             try
             {
-               instance = quartzConnectService.initInstance(config);
+               instanceConnections = quartzConnectService.initInstance(config);
+               config.setConnected(true);
                SettingsUtil.saveConfig(config);
             }
             catch (Throwable t)
@@ -92,8 +93,15 @@ public class QuartzInstanceService
                log.error("Failed to connect! " + config.toString(), t);
             }
 
-            QuartzInstanceService.putQuartzInstance(instance);
-            log.debug(instance.toString());
+            if (instanceConnections != null && instanceConnections.size() > 0)
+            {
+               for (int j = 0; j < instanceConnections.size(); j++)
+               {
+                  QuartzInstanceConnection instanceConnection = instanceConnections.get(j);
+                  QuartzInstanceConnectionService.putQuartzInstance(instanceConnection);
+                  log.debug(instanceConnection.toString());
+               }
+            }
          }
       }
    }
@@ -104,7 +112,7 @@ public class QuartzInstanceService
     * @param qiid
     * @return
     */
-   public static QuartzInstance getQuartzInstanceByID(String qiid)
+   public static QuartzInstanceConnection getQuartzInstanceByID(String qiid)
    {
       if (quartzInstanceMap != null)
       {
