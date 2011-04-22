@@ -23,17 +23,21 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jwatch.domain.adapter.QuartzJMXAdapter;
+import org.jwatch.domain.adapter.QuartzJMXAdapterFactory;
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
-import org.jwatch.domain.instance.QuartzInstance;
-import org.jwatch.domain.instance.QuartzInstanceService;
+import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstanceConnectionService;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.JSONUtil;
 import org.jwatch.util.SettingsUtil;
 import org.jwatch.util.Tools;
 
+import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,17 +51,23 @@ public class QuartzInstanceHandler
    static Logger log = Logger.getLogger(QuartzInstanceHandler.class);
 
    /**
-    * Returns instances found in memory map
+    * Returns instances found. For now, it pulls from the config file every time.
     *
     * @return
-    * @see org.jwatch.domain.instance.QuartzInstanceService
+    * @see org.jwatch.domain.instance.QuartzInstanceConnectionService
     */
-   public static JSONObject getInstances()
+   public static JSONObject loadInstances()
    {
       JSONObject jsonObject = new JSONObject();
       try
       {
-         Map qMap = QuartzInstanceService.getQuartzInstanceMap();
+/*         Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
+         if (qMap == null)// if the map is empty, try the config file.
+         {*/
+         QuartzInstanceConnectionService.initQuartzInstanceMap();
+         Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
+/*         }*/
+
          if (qMap != null)
          {
             JSONArray jsonArray = new JSONArray();
@@ -65,8 +75,9 @@ public class QuartzInstanceHandler
             {
                Map.Entry entry = (Map.Entry) it.next();
                String k = (String) entry.getKey();
-               QuartzInstance quartzInstance = (QuartzInstance) qMap.get(k);
-               JSONObject jo = JSONObject.fromObject(quartzInstance);
+               QuartzInstanceConnection quartzInstanceConnection = (QuartzInstanceConnection) qMap.get(k);
+               QuartzConfig quartzConfig = new QuartzConfig(quartzInstanceConnection);
+               JSONObject jo = JSONObject.fromObject(quartzConfig);
                jsonArray.add(jo);
             }
             jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, jsonArray);
@@ -80,6 +91,7 @@ public class QuartzInstanceHandler
       }
       return jsonObject;
    }
+
 
    /**
     * Given JMX connection settings: this will connect to the instance, and if successful
@@ -99,21 +111,41 @@ public class QuartzInstanceHandler
          String username = StringUtils.trimToNull((String) map.get("userName"));
          String password = StringUtils.trimToNull((String) map.get("password"));
 
-         QuartzConfig quartzConfig = new QuartzConfig(Tools.generateUUID(), host, port, username, password);
-         QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-         QuartzInstance quartzInstance = quartzConnectService.initInstance(quartzConfig);
-         if (quartzInstance == null)
+         if (StringUtils.trimToNull(host) != null)
          {
-            log.error(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
-            jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
-            return jsonObject;
+            QuartzConfig quartzConfig = new QuartzConfig(Tools.generateUUID(), host, port, username, password);
+            QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
+            List<QuartzInstanceConnection> quartzInstanceConnection = quartzConnectService.initInstance(quartzConfig);
+            if (quartzInstanceConnection == null)
+            {
+               log.error(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
+               jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
+               return jsonObject;
+            }
+
+            // persist
+            if (quartzInstanceConnection != null && quartzInstanceConnection.size() > 0)
+            {
+               for (int i = 0; i < quartzInstanceConnection.size(); i++)
+               {
+                  QuartzInstanceConnection instanceConnection = quartzInstanceConnection.get(i);
+                  QuartzInstanceConnectionService.putQuartzInstance(instanceConnection);
+               }
+               SettingsUtil.saveConfig(quartzConfig);
+            }
+            jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, quartzConfig);
+            jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
          }
-
-         // persist
-         QuartzInstanceService.putQuartzInstance(quartzInstance);
-         SettingsUtil.saveConfig(quartzConfig);
-
-         jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
+         else
+         {
+            jsonObject.put(GlobalConstants.JSON_MESSAGE, GlobalConstants.MESSAGE_CONFIG_EMPTY);
+            jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, false);
+         }
+      }
+      catch (UnknownHostException e)
+      {
+         log.error(e);
+         jsonObject = JSONUtil.buildError("Unknown Host. " + GlobalConstants.MESSAGE_ERR_CHECK_LOG);
       }
       catch (Throwable t)
       {
@@ -127,10 +159,19 @@ public class QuartzInstanceHandler
    {
       JSONObject jsonObject = new JSONObject();
       String qiid = StringUtils.trimToNull((String) map.get("uuid"));
-      QuartzInstance quartzInstance = QuartzInstanceService.getQuartzInstanceByID(qiid);
-      if (quartzInstance != null)
+      try
       {
-
+         QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
+         if (quartzInstanceConnection != null)
+         {
+            QuartzJMXAdapter jmxAdapter = QuartzJMXAdapterFactory.initQuartzJMXAdapter(quartzInstanceConnection.getObjectName(), quartzInstanceConnection.getMBeanServerConnection());
+            //jmxAdapter.
+         }
+      }
+      catch (Throwable t)
+      {
+         log.error(t);
+         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_CHECK_LOG);
       }
       return jsonObject;
    }

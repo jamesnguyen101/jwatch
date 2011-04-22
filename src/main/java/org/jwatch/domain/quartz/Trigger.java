@@ -17,34 +17,13 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA
  **/
-package org.jwatch.domain.connection;
 
-import org.jwatch.domain.instance.QuartzInstanceConnection;
-import org.jwatch.listener.settings.QuartzConfig;
-
-import javax.management.MalformedObjectNameException;
-import java.io.IOException;
-import java.util.List;
+package org.jwatch.domain.quartz;
 
 /**
- * All JMS connections to Quartz MBeans are handled here.
- * Because we cannot rely on the quartz-jar locally, we have to communicate/find mbean attribs using native JMX calls and
- * not use QuartzSchedulerMBean.
- * <p/>
- * Conection params are persisted in memory in {@link org.jwatch.domain.instance.QuartzInstanceConnectionService#quartzInstanceMap}
- *
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
- *         Date: Apr 9, 2011 9:50:04 AM
+ *         Date: Apr 20, 2011 9:37:08 AM
  */
-public interface QuartzConnectService
+public class Trigger
 {
-   /**
-    * Initializes the connection to a quartzinstance.
-    *
-    * @param config
-    * @return
-    * @throws IOException
-    * @throws MalformedObjectNameException
-    */
-   public List<QuartzInstanceConnection> initInstance(QuartzConfig config) throws Exception;
 }

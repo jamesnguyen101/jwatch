@@ -19,6 +19,8 @@
  **/
 package org.jwatch.listener.settings;
 
+import org.jwatch.domain.instance.QuartzInstanceConnection;
+
 /**
  * Class contains connection settings and unique ID for a specific quartz instance.
  * This class gets persisted in the settings file (so don't add extra shit to it!)
@@ -33,6 +35,7 @@ public class QuartzConfig
    private int port;
    private String userName;
    private String password;
+   private boolean isConnected;
 
    public QuartzConfig()
    {
@@ -45,6 +48,15 @@ public class QuartzConfig
       this.port = port;
       this.userName = userName;
       this.password = password;
+   }
+
+   public QuartzConfig(QuartzInstanceConnection quartzInstanceConnection)
+   {
+      this.uuid = quartzInstanceConnection.getUuid();
+      this.host = quartzInstanceConnection.getHost();
+      this.port = quartzInstanceConnection.getPort();
+      this.userName = quartzInstanceConnection.getUserName();
+      this.password = quartzInstanceConnection.getPassword();
    }
 
    public String getUuid()
@@ -97,6 +109,16 @@ public class QuartzConfig
       this.password = password;
    }
 
+   public boolean isConnected()
+   {
+      return isConnected;
+   }
+
+   public void setConnected(boolean connected)
+   {
+      isConnected = connected;
+   }
+
    @Override
    public String toString()
    {
@@ -107,6 +129,7 @@ public class QuartzConfig
       sb.append(", port=").append(port);
       sb.append(", userName='").append(userName).append('\'');
       sb.append(", password='").append(password).append('\'');
+      sb.append(", isConnected=").append(isConnected);
       sb.append('}');
       return sb.toString();
    }

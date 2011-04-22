@@ -1,6 +1,7 @@
+var tabPanel;
 Ext.onReady(function() {
 
-	var tabPanel = new Ext.TabPanel({
+	tabPanel = new Ext.TabPanel({
 		region : 'center',
 		activeTab : 0,
 		autoScroll : true,
@@ -38,134 +39,84 @@ Ext.onReady(function() {
 				url : 'ui?action=get_all_instances',
 				root : 'data',
 				totalProperty : 'totalCount',
-				fields : ['name']
+				fields : ['host', 'port', 'userName', 'password', 'uuid']
 			});
 	QIStore.on('load', function(store, records, options) {
-				if (store.getTotalCount() > 0) {
-					console.log(store.getTotalCount());
-					var baseEl = document.getElementById('div-baseContent');
-					baseTPL.overwrite('div-baseContent', records);
-					Ext.fly(baseEl).slideIn('t', {
-								stopFx : true,
-								duration : 1
-							});
-				} else {
-					console.log('0');
-				}
-				popAlert('Quartz Instances Loaded successfully', 'Success.',
-						'icon-n-info', 3000);
 
-				for (var i = 0; i < 3; i++) {
-					doLoadInstance(i);
-				}
-				tabPanel.activeTab = 0;
-			});
+		// create tab
+		for (var loop = 0; loop < store.getTotalCount(); loop++) {
+			if (store.data.items[loop] != undefined) {
+				doLoadInstance(store.data.items[loop].data);
+			}
+		}
+
+		/*
+		 * // populate tab for (var loop = 0; loop < store.getTotalCount();
+		 * loop++) { if (store.data.items[loop] != undefined) {
+		 * getInstanceDetails(store.data.items[loop].data); } }
+		 */
+
+		if (store.getTotalCount() > 0) {
+			popAlert('Quartz Instances Loaded successfully', 'Success',
+					'icon-n-info', 3000);
+		} else {
+			popAlert(
+					'Quartz Instances Not Configured, click on the Add link to get started.',
+					'Nothing to see...', 'icon-n-warn', 8000);
+		}
+		tabPanel.activeTab = 0;
+	});
 	QIStore.load();
 
-	doLoadInstance = function(id) {
+	doLoadInstance = function(instance) {
+
+		var main_did = 'm_' + instance.id;
+
+		// console.log("loading: " + id);
 		var sampleTab = new Ext.Panel({
-					id : 'foo' + id,
+					id : instance.id,
 					iconCls : 'ico-clock',
 					frame : false,
 					border : false,
 					plain : false,
 					width : '100%',
-					title : '<font class="panelTitle">foo' + id + '</font>',
+					title : '<font class="panelTitle">' + instance.userName
+							+ '@' + instance.host + ':' + instance.port
+							+ '</font>',
 					height : 50,
 					autoHeight : true,
 					closable : true,
-					html : '<p class="panel-info"></p>'
+					html : '<p class="panel-info"><div id="' + main_did
+							+ '">Q</div></p>'
 				});
-		tabPanel.add(sampleTab);
-	}
 
-	/***************************************************************************
-	 * Add new instance panel/window
-	 **************************************************************************/
-	var addInstanceWin;
-	addInstance = function() {
-		if (!addInstanceWin) {
-			var addInstanceHelp = new Ext.Panel({
-				html : '<p class="help-box">TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO</p>',
-				region : 'north',
-				border : false,
-				autoHeight : true,
-				width : '100%',
-				frame : false
-			});
-			var addInstancePanel = new Ext.FormPanel({
-				border : false,
-				region : 'center',
-				frame : false,
-				plain : false,
-				monitorValid : true,
-				bodyStyle : 'padding:5px 5px 0',
-				items : [new Ext.form.FieldSet({
-							border : false,
-							frame : false,
-							defaultType : 'textfield',
-							autoHeight : true,
-							width : '400px',
-							buttonAlign : 'center',
-							items : [{
-										fieldLabel : 'Host',
-										name : 'host',
-										width : 190,
-										allowBlank : false,
-										required : true,
-										maxLength : 254,
-										blankText : 'Host cannot be left blank.'
-									}, {
-										fieldLabel : 'Port',
-										name : 'port',
-										width : 190,
-										maxLength : 254
-									}]
-						})],
-				buttons : [{
-					formBind : true,
-					text : 'Save New Instance',
-					iconCls : 'icon-ok',
-					handler : function() {
-						addInstancePanel.form.submit({
-									url : '/ui',
-									params : {
-										data : Ext.util.JSON
-												.encode(addInstancePanel.form
-														.getValues())
-									},
-									waitMsg : 'Saving Settings...',
-									success : function(form, action) {
-										popAlert('TODO DESC', 'TODO',
-												'icon-n-info', 3000);
-										addInstanceWin.hide();
-										addInstancePanel.form.reset();
-									},
-									failure : function(form, action) {
-										Ext.Msg.show({
-													msg : 'Settings save failed!',
-													buttons : Ext.Msg.OK,
-													icon : Ext.MessageBox.ERROR
-												});
-										addInstanceWin.hide();
-									}
-								});
-					}
-				}]
-			});
-			addInstanceWin = new Ext.Window({
-						id : 'addInstanceWin',
-						title : '<font class="panelTitle">Add Quartz Instance</font>',
-						layout : 'border',
-						width : 400,
-						frame : true,
-						height : 500,
-						closeAction : 'hide',
-						plain : false,
-						border : true,
-						items : [addInstanceHelp, addInstancePanel]
-					});
-		}
-		addInstanceWin.show('addInstanceLink');
+		var iStore = new Ext.data.JsonStore({
+					url : 'ui?action=get_all_instances',
+					root : 'data',
+					totalProperty : 'totalCount',
+					fields : ['host', 'port', 'userName', 'password', 'uuid']
+				});
+		iStore.on('load', function(store, records, options) {
+
+			// create tab
+			for (var loop = 0; loop < store.getTotalCount(); loop++) {
+				if (store.data.items[loop] != undefined) {
+					doLoadInstance(store.data.items[loop].data);
+				}
+			}
+
+			if (store.getTotalCount() > 0) {
+				popAlert('Quartz Instances Loaded successfully', 'Success',
+						'icon-n-info', 3000);
+			} else {
+				popAlert(
+						'Quartz Instances Not Configured, click on the Add link to get started.',
+						'Nothing to see...', 'icon-n-warn', 8000);
+			}
+			tabPanel.activeTab = 0;
+		});
+		iStore.load();
+
+		tabPanel.add(sampleTab);
 	}
 });

@@ -34,4 +34,5 @@ public class GlobalConstants
    public static final String MESSAGE_ERR_CHECK_LOG = "Error processing request! Check log for details.";
    public static final String MESSAGE_WARN_VERSION = "Your version of Quartz may not be supported!";
    public static final String MESSAGE_ERR_CLOSE_CONFIG = "Unable to close config file handle.";
+   public static final String MESSAGE_CONFIG_EMPTY = "Empty configuration details.";
 }

@@ -27,6 +27,7 @@ package org.jwatch.domain.quartz;
  */
 public class Scheduler
 {
+   private String instanceUUID;
    private String name;
    private String instanceId;
    private boolean started;
@@ -35,6 +36,16 @@ public class Scheduler
    private String version;
    private String jobStoreClassName;
    private int threadPoolSize;
+
+   public String getInstanceUUID()
+   {
+      return instanceUUID;
+   }
+
+   public void setInstanceUUID(String instanceUUID)
+   {
+      this.instanceUUID = instanceUUID;
+   }
 
    public String getName()
    {

@@ -72,8 +72,7 @@ public class JWatchUIServlet extends HttpServlet
 
             if (subject.equalsIgnoreCase(ActionConstants.LOAD_INSTANCES))
             {
-               Map map = JSONUtil.convertRequestToMap(req);
-               returnO = QuartzInstanceHandler.getInstances();
+               returnO = QuartzInstanceHandler.loadInstances();
             }
             else if (subject.equalsIgnoreCase(ActionConstants.CREATE_INSTANCE))
             {

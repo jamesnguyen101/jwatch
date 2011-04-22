@@ -122,6 +122,10 @@ table.header .rightTD a:hover {
     background-image: url( "../images/n-suggest.png" ) !important;
 }
 
+.icon-n-warn {
+    background-image: url( "../images/n-warn.png" ) !important;
+}
+
 .icon-delete {
     background-image: url( "../images/delete.png" ) !important;
 }
