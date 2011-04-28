@@ -56,7 +56,7 @@ public class SettingsLoaderListener implements ServletContextListener
 
    public void contextDestroyed(ServletContextEvent event)
    {
-      // TODO: maybe some sort of file handle close calls here?
+      // TODO: need to close all of the mbeanserver connections, and the json file handle.
       log.info("Shutting down SettingsLoaderListener service...");
    }
 }

@@ -22,6 +22,7 @@ package org.jwatch.domain.adapter;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.connection.QuartzConnectUtil;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstanceConnectionUtil;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.util.GlobalConstants;
 
@@ -32,6 +33,8 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.openmbean.TabularData;
+import java.util.List;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
@@ -122,5 +125,24 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       scheduler.setQuartzInstanceUUID(quartzInstanceConnection.getUuid());
       scheduler.setVersion(this.getVersion(quartzInstanceConnection, objectName));
       return scheduler;
+   }
+
+   @Override
+   public List getJobDetails(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
+   {
+      Scheduler scheduler = QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
+      JMXOperationInput jmxOperationInput = new JMXOperationInput(quartzInstanceConnection, new String[]{String.class.getName()}, "getAllJobDetails", new Object[]{scheduleID}, scheduler.getObjectName());
+
+      TabularData tdata = (TabularData)callJMXOperation(jmxOperationInput);
+
+      return null;
+   }
+
+   private Object callJMXOperation(JMXOperationInput jmxOperationInput)   throws Exception
+   {
+      QuartzInstanceConnection quartzInstanceConnection = jmxOperationInput.getQuartzInstanceConnection();
+      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      Object o = connection.invoke(jmxOperationInput.getObjectName(), jmxOperationInput.getOperation(), jmxOperationInput.getParameters(), jmxOperationInput.getSignature());
+      return o;
    }
 }

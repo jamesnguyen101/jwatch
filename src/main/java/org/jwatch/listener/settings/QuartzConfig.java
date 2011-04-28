@@ -30,6 +30,7 @@ import org.jwatch.domain.instance.QuartzInstanceConnection;
  */
 public class QuartzConfig
 {
+   private String uname;
    private String uuid;
    private String host;
    private int port;
@@ -46,6 +47,7 @@ public class QuartzConfig
       this.uuid = uuid;
       this.host = host;
       this.port = port;
+      this.uname = this.getUname();
       this.userName = userName;
       this.password = password;
    }
@@ -55,8 +57,20 @@ public class QuartzConfig
       this.uuid = quartzInstanceConnection.getUuid();
       this.host = quartzInstanceConnection.getHost();
       this.port = quartzInstanceConnection.getPort();
+      this.uname = this.getUname();
       this.userName = quartzInstanceConnection.getUserName();
       this.password = quartzInstanceConnection.getPassword();
+   }
+
+   public String getUname()
+   {
+      this.uname = getHost() + getPort();
+      return uname;
+   }
+
+   public void setUname(String uname)
+   {
+      this.uname = uname;
    }
 
    public String getUuid()
@@ -124,7 +138,8 @@ public class QuartzConfig
    {
       final StringBuilder sb = new StringBuilder();
       sb.append("QuartzConfig");
-      sb.append("{uuid='").append(uuid).append('\'');
+      sb.append("{uname='").append(uname).append('\'');
+      sb.append(", uuid='").append(uuid).append('\'');
       sb.append(", host='").append(host).append('\'');
       sb.append(", port=").append(port);
       sb.append(", userName='").append(userName).append('\'');

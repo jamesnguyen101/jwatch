@@ -188,24 +188,31 @@ public class QuartzInstanceHandler
       return jsonObject;
    }
 
-   public static JSONObject getInstanceDetails(Map map)
+   public static JSONObject getJobsForScheduler(Map map)
    {
       JSONObject jsonObject = new JSONObject();
-/*      String qiid = StringUtils.trimToNull((String) map.get("uuid"));
+      JSONArray jsonArray = new JSONArray();
+
+      String uuidInstance = StringUtils.trimToNull((String) map.get("uuidInstance"));
       try
       {
-         QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
-         if (quartzInstanceConnection != null)
+         if (uuidInstance != null)
          {
-            QuartzJMXAdapter jmxAdapter = QuartzJMXAdapterFactory.initQuartzJMXAdapter(quartzInstanceConnection.getObjectName(), quartzInstanceConnection.getMBeanServerConnection());
-            //jmxAdapter.
+            String[] arr = uuidInstance.split("@@");
+            String uuid = arr[0];
+            String scheduleID = arr[1];
+            QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(uuid);
+            if (quartzInstanceConnection != null)
+            {
+               quartzInstanceConnection.getJmxAdapter().getJobDetails(quartzInstanceConnection, scheduleID);
+            }
          }
       }
       catch (Throwable t)
       {
          log.error(t);
          jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_CHECK_LOG);
-      }*/
+      }
       return jsonObject;
    }
 }
