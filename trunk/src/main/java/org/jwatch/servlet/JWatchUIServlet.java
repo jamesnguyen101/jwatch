@@ -48,7 +48,7 @@ public class JWatchUIServlet extends HttpServlet
 
    public final void init(ServletConfig servletConfig) throws ServletException
    {
-      log.info("******************************");
+      log.info("************ STARTED: JWatchUIServlet ******************");
    }
 
    public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -79,15 +79,15 @@ public class JWatchUIServlet extends HttpServlet
                Map map = JSONUtil.convertRequestToMap(req);
                returnO = QuartzInstanceHandler.createInstance(map);
             }
-            else if (subject.equalsIgnoreCase(ActionConstants.LOAD_INSTANCE_DETAILS))
-            {
-               Map map = JSONUtil.convertRequestToMap(req);
-               returnO = QuartzInstanceHandler.getInstanceDetails(map);
-            }
             else if (subject.equalsIgnoreCase(ActionConstants.LOAD_SCHEDULERS))
             {
                Map map = JSONUtil.convertRequestToMap(req);
                returnO = QuartzInstanceHandler.getSchedulersForForQuartzInstance(map);
+            }
+            else if (subject.equalsIgnoreCase(ActionConstants.LOAD_JOBS))
+            {
+               Map map = JSONUtil.convertRequestToMap(req);
+               returnO = QuartzInstanceHandler.getJobsForScheduler(map);
             }
 
             out.print(returnO);

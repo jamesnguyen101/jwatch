@@ -25,7 +25,7 @@ addInstance = function() {
                         frame : false,
                         defaultType : 'textfield',
                         autoHeight : true,
-                        width : '400px',
+                        width : '450px',
                         buttonAlign : 'center',
                         items : [{
                                     fieldLabel : 'Host',
@@ -83,7 +83,7 @@ addInstance = function() {
                                                 'icon-n-info', 3000);
                                         addInstanceWin.hide();
                                         addInstancePanel.form.reset();
-                                        doLoadInstance(res.data.uuid);
+                                        doLoadInstance(res.data);
                                     } else if (res.success == false) {
                                         Ext.Msg.show({
                                                     title : 'Settings save failed!',
@@ -118,7 +118,7 @@ addInstance = function() {
                     layout : 'border',
                     width : 320,
                     frame : true,
-                    height : 250,
+                    height : 300,
                     closeAction : 'hide',
                     plain : false,
                     border : true,

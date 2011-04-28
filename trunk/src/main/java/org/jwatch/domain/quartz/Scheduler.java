@@ -29,6 +29,7 @@ import javax.management.ObjectName;
  */
 public class Scheduler
 {
+   private String uuidInstance;
    private String quartzInstanceUUID;
    private String name;
    private ObjectName objectName;
@@ -40,6 +41,16 @@ public class Scheduler
    private String jobStoreClassName;
    private String threadPoolClassName;
    private int threadPoolSize;
+
+   public String getUuidInstance()
+   {
+      return this.quartzInstanceUUID + "@@" + instanceId;
+   }
+
+   public void setUuidInstance(String uuidInstance)
+   {
+      this.uuidInstance = uuidInstance;
+   }
 
    public String getQuartzInstanceUUID()
    {

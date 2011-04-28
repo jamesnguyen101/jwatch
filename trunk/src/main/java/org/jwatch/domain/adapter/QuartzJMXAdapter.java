@@ -24,6 +24,7 @@ import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.quartz.Scheduler;
 
 import javax.management.ObjectName;
+import java.util.List;
 
 /**
  * TODO: implement this across other quartz versions.
@@ -48,4 +49,6 @@ public interface QuartzJMXAdapter
    void printClassName(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
    Scheduler populateScheduler(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+
+   List getJobDetails(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
 }

@@ -11,5 +11,6 @@
     <script language="JavaScript" src="js/loading.js" type="text/javascript"></script>
     <script language="JavaScript" src="js/layout.js" type="text/javascript"></script>
     <script language="JavaScript" src="js/qcreate.js" type="text/javascript"></script>
+    <script language="JavaScript" src="js/scheduler.js" type="text/javascript"></script>
 </head>
 <body>

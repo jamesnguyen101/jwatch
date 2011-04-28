@@ -18,17 +18,37 @@
  * Boston, MA 02110-1301 USA
  **/
 
-package org.jwatch.domain.quartz;
+package org.jwatch.domain.instance;
+
+import org.jwatch.domain.quartz.Scheduler;
 
 import java.util.List;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
- *         Date: Apr 20, 2011 9:36:58 AM
+ *         Date: Apr 28, 2011 5:01:26 PM
  */
-public class Instance
+public class QuartzInstanceConnectionUtil
 {
-   private String uuid;
-   private List<Scheduler> schedulers;
-
+   /**
+    * @param quartzInstanceConnection
+    * @param instanceId               scheduler-instance-id
+    * @return
+    */
+   public static Scheduler getSchedulerByInstanceId(QuartzInstanceConnection quartzInstanceConnection, String instanceId)
+   {
+      List list = quartzInstanceConnection.getSchedulerList();
+      if (list != null && list.size() > 0)
+      {
+         for (int i = 0; i < list.size(); i++)
+         {
+            Scheduler s = (Scheduler) list.get(i);
+            if (s.getInstanceId().equals(instanceId))
+            {
+               return s;
+            }
+         }
+      }
+      return null;
+   }
 }

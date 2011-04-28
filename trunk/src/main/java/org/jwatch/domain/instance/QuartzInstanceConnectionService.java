@@ -86,7 +86,6 @@ public class QuartzInstanceConnectionService
             {
                quartzInstanceConnection = quartzConnectService.initInstance(config);
                config.setConnected(true);
-               SettingsUtil.saveConfig(config);
             }
             catch (Throwable t)
             {
