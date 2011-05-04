@@ -23,8 +23,10 @@ import org.apache.log4j.Logger;
 import org.jwatch.domain.connection.QuartzConnectUtil;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.instance.QuartzInstanceConnectionUtil;
+import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.util.GlobalConstants;
+import org.jwatch.util.JMXUtil;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
@@ -33,7 +35,10 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.openmbean.TabularData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.TabularDataSupport;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -130,19 +135,64 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    @Override
    public List getJobDetails(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
    {
+      List<Job> jobs = null;
       Scheduler scheduler = QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
-      JMXOperationInput jmxOperationInput = new JMXOperationInput(quartzInstanceConnection, new String[]{String.class.getName()}, "getAllJobDetails", new Object[]{scheduleID}, scheduler.getObjectName());
+      JMXInput jmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName()}, "AllJobDetails", new Object[]{scheduleID}, scheduler.getObjectName());
 
-      TabularData tdata = (TabularData)callJMXOperation(jmxOperationInput);
+      TabularDataSupport tdata = (TabularDataSupport) callJMXAttribute(jmxInput);
+      if (tdata != null)
+      {
+         jobs = new ArrayList<Job>();
 
-      return null;
+         // tdata contains a hashmap, so extract the values of the map, which are CompositeDataSupport type.
+         for (Iterator it = tdata.values().iterator(); it.hasNext();)
+         {
+            // this is a mess, because we don't know what the data wtype will be...
+            Object object = (Object) it.next();
+            // only deal with javax.management.openmbean.CompositeDataSupport
+            if (!(object instanceof CompositeDataSupport))
+            {
+               continue;
+            }
+
+            CompositeDataSupport compositeDataSupport = (CompositeDataSupport) object;
+            System.out.println();
+            System.out.println(compositeDataSupport.get("name"));
+            Job job = new Job();
+            job.setQuartzInstanceId(scheduler.getQuartzInstanceUUID());
+            job.setSchedulerInstanceId(scheduler.getInstanceId());
+            job.setJobName((String) JMXUtil.convertToType(compositeDataSupport, "name"));
+            job.setDescription((String) JMXUtil.convertToType(compositeDataSupport, "description"));
+            job.setDurability(((Boolean) JMXUtil.convertToType(compositeDataSupport, "durability")).booleanValue());
+            job.setShouldRecover(((Boolean) JMXUtil.convertToType(compositeDataSupport, "shouldRecover")).booleanValue());
+            job.setGroup((String) JMXUtil.convertToType(compositeDataSupport, "group"));
+            job.setJobClass((String) JMXUtil.convertToType(compositeDataSupport, "jobClass"));
+
+            System.out.println(job);
+            jobs.add(job);
+         }
+      }
+      return jobs;
+
+      /**
+       * FYI
+       * {description=Some rand job, durability=true, group=group1, jobClass=org.qtest.HelloJob, jobDataMap=javax.management.openmbean.TabularDataSupport(tabularType=javax.management.openmbean.TabularType(name=JobDataMap,rowType=javax.management.openmbean.CompositeType(name=JobDataMap,items=((itemName=key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(key)),contents={}), name=myJob, shouldRecover=false}
+       * javax.management.openmbean.CompositeType(name=JobDetail,items=((itemName=description,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=durability,itemType=javax.management.openmbean.SimpleType(name=java.lang.Boolean)),(itemName=group,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=jobClass,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=jobDataMap,itemType=javax.management.openmbean.TabularType(name=JobDataMap,rowType=javax.management.openmbean.CompositeType(name=JobDataMap,items=((itemName=key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(key))),(itemName=name,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=shouldRecover,itemType=javax.management.openmbean.SimpleType(name=java.lang.Boolean))))
+       */
    }
 
-   private Object callJMXOperation(JMXOperationInput jmxOperationInput)   throws Exception
+   private Object callJMXAttribute(JMXInput jmxInput) throws Exception
    {
-      QuartzInstanceConnection quartzInstanceConnection = jmxOperationInput.getQuartzInstanceConnection();
+      QuartzInstanceConnection quartzInstanceConnection = jmxInput.getQuartzInstanceConnection();
       MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
-      Object o = connection.invoke(jmxOperationInput.getObjectName(), jmxOperationInput.getOperation(), jmxOperationInput.getParameters(), jmxOperationInput.getSignature());
+      return (Object) connection.getAttribute(jmxInput.getObjectName(), "AllJobDetails");
+   }
+
+   private Object callJMXOperation(JMXInput jmxInput) throws Exception
+   {
+      QuartzInstanceConnection quartzInstanceConnection = jmxInput.getQuartzInstanceConnection();
+      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      Object o = connection.invoke(jmxInput.getObjectName(), jmxInput.getOperation(), jmxInput.getParameters(), jmxInput.getSignature());
       return o;
    }
 }

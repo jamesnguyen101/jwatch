@@ -25,7 +25,6 @@ import org.jwatch.domain.adapter.QuartzJMXAdapterFactory;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.settings.QuartzConfig;
-import org.jwatch.util.GlobalConstants;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -64,6 +63,7 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
       Set<ObjectName> names = connection.queryNames(mBName, null);
       QuartzInstanceConnection quartzInstanceConnection = new QuartzInstanceConnection(config);
       quartzInstanceConnection.setMBeanServerConnection(connection);
+      quartzInstanceConnection.setJmxConnector(connector);
 
       List<Scheduler> schList = new ArrayList<Scheduler>();
       for (ObjectName objectName : names)   // for each scheduler.

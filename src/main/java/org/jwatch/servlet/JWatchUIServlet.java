@@ -34,8 +34,7 @@ import java.util.Map;
 
 /**
  * Calls handler layer based on specific commans passed-in through GEt/POST that map to {@link org.jwatch.servlet.ActionConstants}.
- * Currently, all responses are in JSON format. The handler layer is flexible enough to support other response types
- * in the future, as it standardizes on {@link org.jwatch.util.Response}.
+ * Currently, all responses are in JSON format.
  * <p/>
  * TODO: This thing needs to be replaced by something like jpoxy, or maintenance will be costly.
  *

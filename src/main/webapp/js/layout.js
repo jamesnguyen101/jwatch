@@ -1,4 +1,3 @@
-var tabPanel;
 Ext.onReady(function() {
 
 	tabPanel = new Ext.TabPanel({
@@ -150,7 +149,7 @@ Ext.onReady(function() {
 					listeners : {
 						'select' : function(combo, record) {
 							var s = record.data.uuidInstance;
-							console.log(uuidInstance);
+							getJobsForScheduler(s);
 						}
 					}
 				});
@@ -168,5 +167,15 @@ Ext.onReady(function() {
 					 * items : [new Ext.ux.form.DateRange({ value : dStart + '
 					 * to ' + dEnd, handler : handleDateSelection })]
 					 */});
+	}
+
+	getJobsForScheduler = function(id) {
+		var jobStore = new Ext.data.JsonStore({
+					url : 'ui?action=get_jobs&uuidInstance=' + id,
+					root : 'data',
+					totalProperty : 'totalCount',
+					fields : ['name', 'instanceId', 'uuidInstance']
+				});
+		jobStore.load();
 	}
 });

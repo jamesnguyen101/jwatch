@@ -24,7 +24,7 @@ import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.settings.QuartzConfig;
 
 import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
 import java.util.List;
 
 /**
@@ -42,6 +42,10 @@ public class QuartzInstanceConnection extends QuartzConfig
 
    private QuartzJMXAdapter jmxAdapter;
    private List<Scheduler> schedulerList;
+   /**
+    * needed for shutdown. *
+    */
+   private JMXConnector jmxConnector;
 
    public QuartzInstanceConnection(String uuid, String host, int port, String userName, String password)
    {
@@ -81,6 +85,16 @@ public class QuartzInstanceConnection extends QuartzConfig
    public void setSchedulerList(List<Scheduler> schedulerList)
    {
       this.schedulerList = schedulerList;
+   }
+
+   public JMXConnector getJmxConnector()
+   {
+      return jmxConnector;
+   }
+
+   public void setJmxConnector(JMXConnector jmxConnector)
+   {
+      this.jmxConnector = jmxConnector;
    }
 
    @Override

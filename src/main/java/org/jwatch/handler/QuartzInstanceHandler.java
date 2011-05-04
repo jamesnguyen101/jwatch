@@ -27,6 +27,7 @@ import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.instance.QuartzInstanceConnectionService;
+import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
@@ -192,6 +193,7 @@ public class QuartzInstanceHandler
    {
       JSONObject jsonObject = new JSONObject();
       JSONArray jsonArray = new JSONArray();
+      int totalCount = 0;
 
       String uuidInstance = StringUtils.trimToNull((String) map.get("uuidInstance"));
       try
@@ -204,14 +206,27 @@ public class QuartzInstanceHandler
             QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(uuid);
             if (quartzInstanceConnection != null)
             {
-               quartzInstanceConnection.getJmxAdapter().getJobDetails(quartzInstanceConnection, scheduleID);
+               List<Job> jobs = quartzInstanceConnection.getJmxAdapter().getJobDetails(quartzInstanceConnection, scheduleID);
+               if (jobs != null && jobs.size() > 0)
+               {
+                  totalCount = jobs.size();
+                  for (int i = 0; i < jobs.size(); i++)
+                  {
+                     Job job = jobs.get(i);
+                     JSONObject o = JSONObject.fromObject(job);
+                     jsonArray.add(o);
+                  }
+               }
             }
          }
+         jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
+         jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, jsonArray);
+         jsonObject.put(GlobalConstants.JSON_TOTAL_COUNT, totalCount);
       }
       catch (Throwable t)
       {
          log.error(t);
-         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_CHECK_LOG);
+         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_LOAD_JOBS);
       }
       return jsonObject;
    }

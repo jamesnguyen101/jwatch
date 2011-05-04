@@ -20,11 +20,15 @@
 package org.jwatch.listener.settings;
 
 import org.apache.log4j.Logger;
+import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.instance.QuartzInstanceConnectionService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Config in web.xml. loads settings file on boot.
@@ -44,7 +48,7 @@ public class SettingsLoaderListener implements ServletContextListener
          long start = Calendar.getInstance().getTimeInMillis();
 
          QuartzInstanceConnectionService.initQuartzInstanceMap();
-         
+
          long end = Calendar.getInstance().getTimeInMillis();
          log.info("Settings startup completed in: " + (end - start) + " ms");
       }
@@ -56,7 +60,21 @@ public class SettingsLoaderListener implements ServletContextListener
 
    public void contextDestroyed(ServletContextEvent event)
    {
-      // TODO: need to close all of the mbeanserver connections, and the json file handle.
       log.info("Shutting down SettingsLoaderListener service...");
+      Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
+      for (Iterator it = qMap.entrySet().iterator(); it.hasNext();)
+      {
+         Map.Entry entry = (Map.Entry) it.next();
+         String k = (String) entry.getKey();
+         QuartzInstanceConnection quartzInstanceConnection = (QuartzInstanceConnection) qMap.get(k);
+         try
+         {
+            quartzInstanceConnection.getJmxConnector().close();
+         }
+         catch (IOException e)
+         {
+            log.error("Failed to close Connection: " + quartzInstanceConnection, e);
+         }
+      }
    }
 }

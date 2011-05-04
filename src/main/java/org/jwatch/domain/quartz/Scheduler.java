@@ -49,7 +49,7 @@ public class Scheduler
 
    public void setUuidInstance(String uuidInstance)
    {
-      this.uuidInstance = uuidInstance;
+      this.uuidInstance = this.quartzInstanceUUID + "@@" + this.instanceId;
    }
 
    public String getQuartzInstanceUUID()

@@ -20,10 +20,8 @@
 package org.jwatch.util;
 
 import net.sf.json.JSONObject;
-import org.jwatch.util.Response;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -58,24 +56,4 @@ public class JSONUtil
       return jsonObject;
    }
 
-   public static JSONObject fromResponseToJSON(Response response)
-   {
-      JSONObject jsonObject = new JSONObject();
-
-      jsonObject.put(GlobalConstants.JSON_MESSAGE, response.getSMessage());
-      jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, response.isSuccess());
-      Object o = response.getObject();
-      if (o instanceof ArrayList)
-      {
-         // TODO: loop and build a JSONArray.
-         // TODO: Maybe deal with Map types or generic collections?
-      }
-      else
-      {
-         // assume bean with no cyclical dependencies for now.
-         JSONObject object = JSONObject.fromObject(o);
-         jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, object);
-      }
-      return jsonObject;
-   }
 }
