@@ -30,7 +30,7 @@ import javax.management.ObjectName;
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 28, 2011 4:49:06 PM
  */
-public class JMXOperationInput
+public class JMXInput
 {
    private QuartzInstanceConnection quartzInstanceConnection;
    private String[] signature;
@@ -38,11 +38,11 @@ public class JMXOperationInput
    private Object[] parameters;
    private ObjectName objectName;
 
-   public JMXOperationInput()
+   public JMXInput()
    {
    }
 
-   public JMXOperationInput(QuartzInstanceConnection quartzInstanceConnection, String[] signature, String operation, Object[] parameters, ObjectName objectName)
+   public JMXInput(QuartzInstanceConnection quartzInstanceConnection, String[] signature, String operation, Object[] parameters, ObjectName objectName)
    {
       this.quartzInstanceConnection = quartzInstanceConnection;
       this.signature = signature;
