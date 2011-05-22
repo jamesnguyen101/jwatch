@@ -29,6 +29,7 @@ import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.instance.QuartzInstanceConnectionService;
 import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
+import org.jwatch.domain.quartz.Trigger;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.JSONUtil;
@@ -61,13 +62,8 @@ public class QuartzInstanceHandler
       JSONObject jsonObject = new JSONObject();
       try
       {
-/*         Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
-         if (qMap == null)// if the map is empty, try the config file.
-         {*/
          QuartzInstanceConnectionService.initQuartzInstanceMap();
          Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
-/*         }*/
-
          if (qMap != null)
          {
             JSONArray jsonArray = new JSONArray();
@@ -91,7 +87,6 @@ public class QuartzInstanceHandler
       }
       return jsonObject;
    }
-
 
    /**
     * Given JMX connection settings: this will connect to the instance, and if successful
@@ -227,6 +222,73 @@ public class QuartzInstanceHandler
       {
          log.error(t);
          jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_LOAD_JOBS);
+      }
+      return jsonObject;
+   }
+
+   public static JSONObject getSchedulerInfo(Map map)
+   {
+      JSONObject jsonObject = new JSONObject();
+      String uuidInstance = StringUtils.trimToNull((String) map.get("uuidInstance"));
+      try
+      {
+         if (uuidInstance != null)
+         {
+            String[] arr = uuidInstance.split("@@");
+            String uuid = arr[0];
+            String scheduleID = arr[1];
+            QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(uuid);
+            if (quartzInstanceConnection != null)
+            {
+               Scheduler scheduler = quartzInstanceConnection.getJmxAdapter().getScheduler(quartzInstanceConnection, scheduleID);
+               if (scheduler != null)
+               {
+                  jsonObject = JSONObject.fromObject(scheduler);
+               }
+            }
+         }
+         jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
+      }
+      catch (Throwable t)
+      {
+         log.error(t);
+         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_LOAD_SCHEDULER);
+      }
+      return jsonObject;
+   }
+
+   public static JSONObject getTriggersForJob(Map map)
+   {
+      JSONObject jsonObject = new JSONObject();
+      JSONArray jsonArray = new JSONArray();
+
+      String qiid = StringUtils.trimToNull((String) map.get("uuid"));
+      String jobName = StringUtils.trimToNull((String) map.get("jobName"));
+      String groupName = StringUtils.trimToNull((String) map.get("groupName"));
+      String scheduleID = StringUtils.trimToNull((String) map.get("sid"));
+      int totalCount = 0;
+      try
+      {
+         QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
+         List<Trigger> triggers = quartzInstanceConnection.getJmxAdapter().getTriggersForJob(quartzInstanceConnection, scheduleID, jobName, groupName);
+         if (triggers != null && triggers.size() > 0)
+         {
+            totalCount = triggers.size();
+            for (int i = 0; i < triggers.size(); i++)
+            {
+               Trigger trigger = triggers.get(i);
+               JSONObject object = JSONObject.fromObject(trigger);
+               jsonArray.add(object);
+            }
+         }
+         jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, jsonArray);
+         jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
+         jsonObject.put(GlobalConstants.JSON_TOTAL_COUNT, totalCount);
+      }
+      catch (Throwable t)
+      {
+         log.error(t);
+         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_LOAD_TRIGGERS);
       }
       return jsonObject;
    }

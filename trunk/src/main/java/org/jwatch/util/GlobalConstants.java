@@ -36,4 +36,6 @@ public class GlobalConstants
    public static final String MESSAGE_WARN_VERSION = "Your version of Quartz may not be supported!";
    public static final String MESSAGE_ERR_CLOSE_CONFIG = "Unable to close config file handle.";
    public static final String MESSAGE_CONFIG_EMPTY = "Empty configuration details.";
+   public static final String MESSAGE_ERR_LOAD_SCHEDULER = "Error loading Scheduler!";
+   public static final String MESSAGE_ERR_LOAD_TRIGGERS = "Error loading Triggers for Job";
 }

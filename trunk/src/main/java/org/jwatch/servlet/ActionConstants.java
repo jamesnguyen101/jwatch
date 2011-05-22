@@ -30,4 +30,6 @@ public class ActionConstants
    public static final String CREATE_INSTANCE = "create_instance";
    public static final String LOAD_SCHEDULERS = "get_schedulers";
    public static final String LOAD_JOBS = "get_jobs";
+   public static final String LOAD_SCHEDULERINFO = "get_scheduler_info";
+   public static final String LOAD_TRIGGERS_FOR_JOB = "get_job_triggers";
 }

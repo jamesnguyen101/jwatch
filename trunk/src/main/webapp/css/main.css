@@ -147,3 +147,10 @@ table.header .rightTD a:hover {
     color: #555;
 }
 
+table.panelTbl td{
+    font-size: 12px;
+}
+table.panelTbl td.label{
+    font-size: 12px;
+    font-weight: bold;
+}

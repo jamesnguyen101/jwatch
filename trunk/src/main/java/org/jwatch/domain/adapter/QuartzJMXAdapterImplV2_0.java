@@ -25,6 +25,7 @@ import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.instance.QuartzInstanceConnectionUtil;
 import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
+import org.jwatch.domain.quartz.Trigger;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.JMXUtil;
 
@@ -156,8 +157,6 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
             }
 
             CompositeDataSupport compositeDataSupport = (CompositeDataSupport) object;
-            System.out.println();
-            System.out.println(compositeDataSupport.get("name"));
             Job job = new Job();
             job.setQuartzInstanceId(scheduler.getQuartzInstanceUUID());
             job.setSchedulerInstanceId(scheduler.getInstanceId());
@@ -181,18 +180,34 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
        */
    }
 
+   @Override
+   public Scheduler getScheduler(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
+   {
+      return QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
+   }
+
+   @Override
+   public List<Trigger> getTriggersForJob(QuartzInstanceConnection quartzInstanceConnection, String scheduleID, String jobName, String groupName) throws Exception
+   {
+      List<Trigger> triggers = null;
+
+      JMXInput jmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName(), String.class.getName()}, "getTriggersOfJob", new Object[]{jobName, groupName}, null);
+      List list = (List) callJMXOperation(jmxInput);
+
+      return triggers;
+   }
+
    private Object callJMXAttribute(JMXInput jmxInput) throws Exception
    {
       QuartzInstanceConnection quartzInstanceConnection = jmxInput.getQuartzInstanceConnection();
       MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
-      return (Object) connection.getAttribute(jmxInput.getObjectName(), "AllJobDetails");
+      return (Object) connection.getAttribute(jmxInput.getObjectName(), jmxInput.getOperation());
    }
 
    private Object callJMXOperation(JMXInput jmxInput) throws Exception
    {
       QuartzInstanceConnection quartzInstanceConnection = jmxInput.getQuartzInstanceConnection();
       MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
-      Object o = connection.invoke(jmxInput.getObjectName(), jmxInput.getOperation(), jmxInput.getParameters(), jmxInput.getSignature());
-      return o;
+      return connection.invoke(jmxInput.getObjectName(), jmxInput.getOperation(), jmxInput.getParameters(), jmxInput.getSignature());
    }
 }
