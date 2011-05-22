@@ -22,6 +22,7 @@ package org.jwatch.domain.adapter;
 
 import org.jwatch.domain.instance.QuartzInstanceConnection;
 import org.jwatch.domain.quartz.Scheduler;
+import org.jwatch.domain.quartz.Trigger;
 
 import javax.management.ObjectName;
 import java.util.List;
@@ -51,4 +52,8 @@ public interface QuartzJMXAdapter
    Scheduler populateScheduler(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
 
    List getJobDetails(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
+
+   Scheduler getScheduler(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
+
+   List<Trigger> getTriggersForJob(QuartzInstanceConnection quartzInstanceConnection, String scheduleID, String jobName, String groupName) throws Exception;
 }

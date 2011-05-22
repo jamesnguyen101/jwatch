@@ -60,43 +60,198 @@ Ext.onReady(function() {
 			// tabPanel.activeTab = 0;
 		}
 	});
-
+	var jobStore;
+    var triggerStore;
 	doLoadInstance = function(instance) {
-		// var main_did = 'm_' + instance.uuid;
-
+		// console.log(instance);
 		var html = '<div style="background-color:#DCF6D8;height: 42px; width: 100%;">'
 				+ '<table width="100%">'
 				+ '<tr>'
-				+ '<td width="400">'
-				+ '<div style="padding-top: 0;padding-left: 8px;float:left;">'
-				+ '<font style="font-size: 16px;font-weight: bold;">'
-				+ 'Quartz @ '
-				+ instance.host
-				+ ':'
-				+ instance.port
-				+ '</font>'
-				+ '<br/>'
-				+ '<font style="font-size: 11px;font-weight:normal;">'
-				+ '</font>'
-				+ '</div>'
-				+ '</td>'
-				+ '<td align="left" style="padding-right: 30px;padding-top: 0;">'
-				+ '<div id="sched-select"></div></td>' + '</tr></table></div>'
-
-		var jobPanel = new Ext.Panel({
-					title : '',
-					height : 80,
-					border : false,
-					frame : false
+				+ '<td style="text-align:left" width="200">'
+				+ '<div id="sched-select" style="margin-left:-100;"></div>'
+				+ '</td><td style="text-align:left">'
+				+ '<table><tr><td><div id="infoid"></div></td>'
+				+ '<td><div id="refreshid"></div></td></tr></table></td></tr></table></div>'
+		jobStore = new Ext.data.JsonStore({
+					url : 'ui',
+					root : 'data',
+					autoLoad : false,
+					totalProperty : 'totalCount',
+					fields : ['jobName', 'description', 'group', 'jobClass',
+							'schedulerInstanceId', 'durability',
+							'shouldRecover', 'quartzInstanceId']
 				});
+		jobStore.setDefaultSort('jobName', 'ASC');
+		var jobGrid = new Ext.grid.GridPanel({
+			store : jobStore,
+			closable : false,
+			columns : [{
+				id : 'colaction',
+				header : '',
+				width : 40,
+				sortable : false,
+				renderer : function(value, p, record) {
+					return '<a href="javascript:void(0);" onClick="getTriggersForJob(\''
+							+ record.data.quartzInstanceId
+							+ '\',\''
+							+ record.data.schedulerInstanceId
+							+ '\',\''
+							+ record.data.jobName
+							+ '\',\''
+							+ record.data.group
+							+ '\')">XX</a>';
+				}
+			}, {
+				id : 'jobName',
+				header : "Job",
+				width : 160,
+				sortable : true,
+				dataIndex : 'jobName',
+				renderer : function(value, p, record) {
+					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
+							+ Ext.util.Format.htmlEncode(record.data.jobName)
+							+ '</font></div>'
+				}
+			}, {
+				id : 'group',
+				header : "Group",
+				width : 100,
+				sortable : true,
+				dataIndex : 'group',
+				renderer : function(value, p, record) {
+					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
+							+ Ext.util.Format.htmlEncode(record.data.group)
+							+ '</font></div>'
+				}
+			}, {
+				id : 'jobClass',
+				header : "Job Class",
+				width : 180,
+				sortable : true,
+				dataIndex : 'jobClass',
+				renderer : function(value, p, record) {
+					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
+							+ Ext.util.Format.htmlEncode(record.data.jobClass)
+							+ '</font></div>'
+				}
+			}, {
+				id : 'durability',
+				header : "Durable",
+				width : 50,
+				sortable : true,
+				dataIndex : 'durability',
+				renderer : function(value, p, record) {
+					if (record.data.durability == true) {
+						return '<div style="text-align:center;margin:auto;">'
+								+ '<img src="images/ok.png" border="0"></div>';
+					}
+				}
+			}, {
+				id : 'shouldRecover',
+				header : "Recoverable",
+				width : 80,
+				sortable : true,
+				dataIndex : 'shouldRecover',
+				renderer : function(value, p, record) {
+					if (record.data.shouldRecover == true) {
+						return '<div style="text-align:center;margin:auto;">'
+								+ '<img src="images/ok.png" border="0"></div>';
+					}
+				}
+			}],
+			stripeRows : true,
+			autoScroll : true,
+			autoExpandColumn : 'jobName',
+			region : 'center',
+			floatable : false,
+			// width : '60%',
+			autoWidth : true,
+			height : 350,
+			autoHeight : false,
+			border : true,
+			frame : false,
+			loadMask : true
+		});
+		var triggerGrid = new Ext.Panel({
+			title : 'Job Triggers',
+			height : 50,
+			region : 'south',
+			store : triggerStore,
+			closable : false,
+			columns : [{
+				id : 'jobName',
+				header : "Job",
+				width : 160,
+				sortable : true,
+				dataIndex : 'jobName',
+				renderer : function(value, p, record) {
+					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
+							+ Ext.util.Format.htmlEncode(record.data.jobName)
+							+ '</font></div>'
+				}
+			}, {
+				id : 'group',
+				header : "Group",
+				width : 100,
+				sortable : true,
+				dataIndex : 'group',
+				renderer : function(value, p, record) {
+					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
+							+ Ext.util.Format.htmlEncode(record.data.group)
+							+ '</font></div>'
+				}
+			}, {
+				id : 'jobClass',
+				header : "Job Class",
+				width : 180,
+				sortable : true,
+				dataIndex : 'jobClass',
+				renderer : function(value, p, record) {
+					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
+							+ Ext.util.Format.htmlEncode(record.data.jobClass)
+							+ '</font></div>'
+				}
+			}, {
+				id : 'durability',
+				header : "Durable",
+				width : 50,
+				sortable : true,
+				dataIndex : 'durability',
+				renderer : function(value, p, record) {
+					if (record.data.durability == true) {
+						return '<div style="text-align:center;margin:auto;">'
+								+ '<img src="images/ok.png" border="0"></div>';
+					}
+				}
+			}, {
+				id : 'shouldRecover',
+				header : "Recoverable",
+				width : 80,
+				sortable : true,
+				dataIndex : 'shouldRecover',
+				renderer : function(value, p, record) {
+					if (record.data.shouldRecover == true) {
+						return '<div style="text-align:center;margin:auto;">'
+								+ '<img src="images/ok.png" border="0"></div>';
+					}
+				}
+			}],
+			stripeRows : true,
+			autoScroll : true,
+			autoExpandColumn : 'jobName',
+			region : 'center',
+			floatable : false,
+			border : false,
+			frame : false,
+			loadMask : true
+		});
+
 		var schedPanel = new Ext.Panel({
-					// title : 'schedPanel',
+					id : 'schedPanel' + instance.uuid,
 					border : false,
 					frame : false,
-					region : 'north',
 					html : html,
-					region : 'center'
-
+					region : 'north'
 				});
 
 		var sampleTab = new Ext.Panel({
@@ -105,14 +260,14 @@ Ext.onReady(function() {
 					frame : false,
 					border : false,
 					plain : true,
-					width : '100%',
+					autoWidth : true,
 					title : '<font style="font-size:14px">' + instance.userName
 							+ '@' + instance.host + ':' + instance.port
 							+ '</font>',
-					height : 50,
+					// height : 50,
 					autoHeight : true,
 					closable : true,
-					items : [schedPanel, jobPanel]
+					items : [schedPanel, jobGrid, triggerGrid]
 				});
 		tabPanel.add(sampleTab);
 		tabPanel.setActiveTab(instance.uuid);
@@ -127,55 +282,138 @@ Ext.onReady(function() {
 					root : 'data',
 					totalProperty : 'totalCount',
 					fields : ['name', 'instanceId', 'uuidInstance'],
-					autoLoad : true
+					autoLoad : false
 				});
-		var schedbox = new Ext.form.ComboBox({
-					tpl : comboTPL,
-					itemSelector : 'div.multiline-combo',
-					mode : 'remote',
-					store : schedStore,
-					allowBlank : true,
-					emptyText : 'Select a Scheduler...',
-					selectOnFocus : true,
-					width : 180,
-					listWidth : 300,
-					editable : false,
-					name : 'schedName',
-					id : 'schedName',
-					displayField : 'name',
-					valueField : 'uuidInstance',
-					hiddenName : 'uuidInstance',
-					triggerAction : 'all',
-					listeners : {
-						'select' : function(combo, record) {
-							var s = record.data.uuidInstance;
-							getJobsForScheduler(s);
-						}
-					}
-				});
-		new Ext.form.FormPanel({
-					baseCls : 'x-example-form',
-					style : {
-						margin : 0,
-						padding : 10
-					},
-					border : false,
-					renderTo : 'sched-select',
-					// html: 'aaaa'
-					items : [schedbox]
-					/*
-					 * items : [new Ext.ux.form.DateRange({ value : dStart + '
-					 * to ' + dEnd, handler : handleDateSelection })]
-					 */});
+		schedStore.load({
+			callback : function(records, options, success) {
+				var schedbox = new Ext.form.ComboBox({
+							tpl : comboTPL,
+							itemSelector : 'div.multiline-combo',
+							mode : 'remote',
+							store : schedStore,
+							allowBlank : true,
+							emptyText : 'Select a Scheduler...',
+							selectOnFocus : true,
+							width : 180,
+							listWidth : 300,
+							editable : false,
+							name : 'schedName',
+							id : 'schedName',
+							displayField : 'name',
+							valueField : 'uuidInstance',
+							hiddenName : 'uuidInstance',
+							triggerAction : 'all',
+							listeners : {
+								'select' : function(combo, record) {
+									getJobsForScheduler(record.data.uuidInstance);
+								}
+							}
+						});
+				new Ext.form.FormPanel({
+							baseCls : 'x-example-form',
+							style : {
+								margin : 0,
+								padding : 10
+							},
+							border : false,
+							renderTo : 'sched-select',
+							// html: 'aaaa'
+							items : [schedbox]
+						});
+			}
+		});
+
 	}
 
 	getJobsForScheduler = function(id) {
-		var jobStore = new Ext.data.JsonStore({
-					url : 'ui?action=get_jobs&uuidInstance=' + id,
-					root : 'data',
-					totalProperty : 'totalCount',
-					fields : ['name', 'instanceId', 'uuidInstance']
+		jobStore.load({
+					params : {
+						action : 'get_jobs',
+						'uuidInstance' : id
+					}
 				});
-		jobStore.load();
+		var ii = document.getElementById('infoid');
+		ii.innerHTML = '<a href="javascript:void(0);" onClick="getSchedulerInfo(\''
+				+ id
+				+ '\')"><img src="images/info.png" style="padding-bottom:5px;padding-left:7px;border:0;"/></a>';
+		var ir = document.getElementById('refreshid');
+		ir.innerHTML = '<a href="javascript:void(0);" onClick="refreshScheduler('
+				+ id
+				+ ')"><img src="images/refresh.png" style="padding-bottom:5px;padding-left:7px;border:0;"/></a>';
+	}
+
+	getSchedulerInfo = function(id) {
+		Ext.Ajax.request({
+			url : 'ui',
+			params : {
+				action : 'get_scheduler_info',
+				'uuidInstance' : id
+			},
+			waitMsg : 'Removing User Mapping...',
+			success : function(response, request) {
+				var res = new Object();
+				res = Ext.util.JSON.decode(response.responseText);
+				if (res.success == true) {
+					var schedulerPanel = new Ext.Panel({
+								title : '',
+								region : 'center',
+								autoHeight : true,
+								html : ''
+							});
+					schedulerWin = new Ext.Window({
+						id : 'addInstanceWin',
+						title : '<font class="panelTitle">Scheduler Details</font>',
+						layout : 'fit',
+						width : 620,
+						frame : true,
+						autoScroll : true,
+						height : 380,
+						closeAction : 'close',
+						plain : true,
+						border : true,
+						html : ''
+					});
+					schedulerWin.show(document.body);
+
+					var html = '<div style="padding:10px;"><table class="panelTbl" border="0" cellpadding="5" cellspacing="5">'
+							+ '<tr><td class="label">Scheduler Name:</td><td>'
+							+ res.name
+							+ '</td></tr>'
+							+ '<tr><td class="label">Job Store Class:</td><td>'
+							+ res.jobStoreClassName
+							+ '</td></tr>'
+							+ '<tr><td class="label">Scheduler ID:</td><td>'
+							+ res.instanceId
+							+ '</td></tr>'
+							+ '<tr><td class="label">Canonical Name:</td><td>'
+							+ res.objectName.canonicalName
+							+ '</td></tr>'
+							+ '<tr><td class="label">Domain:</td><td>'
+							+ res.objectName.domain
+							+ '</td></tr>'
+							+ '<tr><td class="label">Started:</td><td>'
+							+ res.started
+							+ '</td></tr>'
+							+ '<tr><td class="label">Shutdown:</td><td>'
+							+ res.shutdown
+							+ '</td></tr>'
+							+ '<tr><td class="label">Standby Mode:</td><td>'
+							+ res.standByMode
+							+ '</td></tr>'
+							+ '<tr><td class="label">ThreadPool Class:</td><td>'
+							+ res.threadPoolClassName
+							+ '</td></tr>'
+							+ '<tr><td class="label">ThreadPool Size:</td><td>'
+							+ res.threadPoolSize
+							+ '</td></tr>'
+							+ '</table></div>'
+					schedulerWin.body.update(html);
+				}
+			}
+		});
+	}
+
+	getTriggersForJob = function(qid, sis, jname, gname) {
+		console.log(qid);
 	}
 });
