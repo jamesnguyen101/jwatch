@@ -8,7 +8,7 @@ a {
 }
 
 a:link, a:visited {
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 a:hover {

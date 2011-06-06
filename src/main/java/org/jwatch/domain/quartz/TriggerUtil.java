@@ -17,43 +17,38 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA
  **/
-package org.jwatch.util;
 
-import org.apache.commons.lang.StringUtils;
+package org.jwatch.domain.quartz;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
- *         Date: Apr 7, 2011 3:19:10 PM
+ *         Date: May 26, 2011 12:06:49 PM
  */
-public class Tools
+public class TriggerUtil
 {
-   public static final String DATE_FORMAT_DEFAULT = "MM/dd/yy HH:mm:ss z";
-
-   public static String generateUUID()
+   public static Date getNextFireTimeForJob(List<Trigger> triggers)
    {
-      UUID id = UUID.randomUUID();
-      return id.toString();
-   }
-
-   public static String toStringFromDate(Date date, String format)
-   {
-      try
+      Date theNext = null;
+      if (triggers != null && triggers.size() > 0)
       {
-         if (StringUtils.trimToNull(format) == null)
+
+         for (int i = 0; i < triggers.size(); i++)
          {
-            format = DATE_FORMAT_DEFAULT;
+            Trigger trigger = triggers.get(i);
+            if (i == 0)  // avoid npe
+            {
+               theNext = trigger.getNextFireTime();
+            }
+
+            if (trigger.getNextFireTime().before(theNext))
+            {
+               theNext = trigger.getNextFireTime();
+            }
          }
-         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-         return simpleDateFormat.format(date);
       }
-      catch (Exception e)
-      {
-         //
-      }
-      return null;
+      return theNext;
    }
 }

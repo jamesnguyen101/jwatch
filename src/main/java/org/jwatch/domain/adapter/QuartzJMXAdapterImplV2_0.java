@@ -26,6 +26,7 @@ import org.jwatch.domain.instance.QuartzInstanceConnectionUtil;
 import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.domain.quartz.Trigger;
+import org.jwatch.domain.quartz.TriggerUtil;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.JMXUtil;
 
@@ -39,6 +40,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.TabularDataSupport;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -167,7 +169,23 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
             job.setGroup((String) JMXUtil.convertToType(compositeDataSupport, "group"));
             job.setJobClass((String) JMXUtil.convertToType(compositeDataSupport, "jobClass"));
 
-            System.out.println(job);
+            // get Next Fire Time for job
+            List<Trigger> triggers = this.getTriggersForJob(quartzInstanceConnection, scheduleID, job.getJobName(), job.getGroup());
+            try
+            {
+               if (triggers != null && triggers.size() > 0)
+               {
+                  Date nextFireTime = TriggerUtil.getNextFireTimeForJob(triggers);
+                  job.setNextFireTime(nextFireTime);
+                  job.setNumTriggers(triggers.size());
+               }
+            }
+            catch (Throwable t)
+            {
+               log.error(t);
+            }
+
+            log.debug("Loaded job: " + job);
             jobs.add(job);
          }
       }
@@ -189,12 +207,67 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    @Override
    public List<Trigger> getTriggersForJob(QuartzInstanceConnection quartzInstanceConnection, String scheduleID, String jobName, String groupName) throws Exception
    {
+      Scheduler scheduler = QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
+
       List<Trigger> triggers = null;
 
-      JMXInput jmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName(), String.class.getName()}, "getTriggersOfJob", new Object[]{jobName, groupName}, null);
+      JMXInput jmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName(), String.class.getName()}, "getTriggersOfJob", new Object[]{jobName, groupName}, scheduler.getObjectName());
       List list = (List) callJMXOperation(jmxInput);
+      if (list != null && list.size() > 0)
+      {
+         triggers = new ArrayList();
+         for (int i = 0; i < list.size(); i++)
+         {
+            CompositeDataSupport compositeDataSupport = (CompositeDataSupport) list.get(i);
+            Trigger trigger = new Trigger();
+            trigger.setCalendarName((String) JMXUtil.convertToType(compositeDataSupport, "calendarName"));
+            trigger.setDescription((String) JMXUtil.convertToType(compositeDataSupport, "description"));
+            trigger.setEndTime((Date) JMXUtil.convertToType(compositeDataSupport, "endTime"));
+            trigger.setFinalFireTime((Date) JMXUtil.convertToType(compositeDataSupport, "finalFireTime"));
+            trigger.setFireInstanceId((String) JMXUtil.convertToType(compositeDataSupport, "fireInstanceId"));
+            trigger.setGroup((String) JMXUtil.convertToType(compositeDataSupport, "group"));
+            trigger.setJobGroup((String) JMXUtil.convertToType(compositeDataSupport, "jobGroup"));
+            trigger.setJobName((String) JMXUtil.convertToType(compositeDataSupport, "jobName"));
+            trigger.setMisfireInstruction(((Integer) JMXUtil.convertToType(compositeDataSupport, "misfireInstruction")).intValue());
+            trigger.setName((String) JMXUtil.convertToType(compositeDataSupport, "name"));
+            trigger.setNextFireTime((Date) JMXUtil.convertToType(compositeDataSupport, "nextFireTime"));
+            trigger.setPreviousFireTime((Date) JMXUtil.convertToType(compositeDataSupport, "previousFireTime"));
+            trigger.setPriority(((Integer) JMXUtil.convertToType(compositeDataSupport, "priority")).intValue());
+            trigger.setStartTime((Date) JMXUtil.convertToType(compositeDataSupport, "startTime"));
 
+            try // get current trigger state
+            {
+               JMXInput stateJmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName(), String.class.getName()}, "getTriggerState", new Object[]{trigger.getName(), trigger.getGroup()}, scheduler.getObjectName());
+               String state = (String) callJMXOperation(stateJmxInput);
+               trigger.setSTriggerState(state);
+            }
+            catch (Throwable tt)
+            {
+               trigger.setSTriggerState(Trigger.STATE_GET_ERROR);
+            }
+
+            triggers.add(trigger);
+         }
+      }
       return triggers;
+
+      /**
+       * {calendarName=null, description=null, endTime=null, finalFireTime=null, fireInstanceId=1306173819858, group=groupx,
+       * jobDataMap=javax.management.openmbean.TabularDataSupport(tabularType=javax.management.openmbean.TabularType
+       * (name=JobDataMap,rowType=javax.management.openmbean.CompositeType(name=JobDataMap,items=
+       * ((itemName=key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String))
+       * ,(itemName=value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(key)),contents={}),
+       * jobGroup=groupx, jobName=myJobx, misfireInstruction=0, name=myTriggerx, nextFireTime=Mon May 23 14:12:19 EDT 2011,
+       * previousFireTime=Mon May 23 14:11:39 EDT 2011, priority=5, startTime=Mon May 23 14:03:39 EDT 2011}
+
+       javax.management.openmbean.CompositeType(name=Trigger,items=((itemName=calendarName,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=description,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=endTime,itemType=javax.management.openmbean.SimpleType(name=java.util.Date)),(itemName=finalFireTime,itemType=javax.management.openmbean.SimpleType(name=java.util.Date)),(itemName=fireInstanceId,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=group,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=jobDataMap,itemType=javax.management.openmbean.TabularType(name=JobDataMap,rowType=javax.management.openmbean.CompositeType(name=JobDataMap,items=((itemName=key,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=value,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)))),indexNames=(key))),(itemName=jobGroup,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=jobName,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=misfireInstruction,itemType=javax.management.openmbean.SimpleType(name=java.lang.Integer)),(itemName=name,itemType=javax.management.openmbean.SimpleType(name=java.lang.String)),(itemName=nextFireTime,itemType=javax.management.openmbean.SimpleType(name=java.util.Date)),(itemName=previousFireTime,itemType=javax.management.openmbean.SimpleType(name=java.util.Date)),(itemName=priority,itemType=javax.management.openmbean.SimpleType(name=java.lang.Integer)),(itemName=startTime,itemType=javax.management.openmbean.SimpleType(name=java.util.Date))))
+       */
+   }
+
+   @Override
+   public void attachListener(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
+   {
+      //To change body of implemented methods use File | Settings | File Templates.
    }
 
    private Object callJMXAttribute(JMXInput jmxInput) throws Exception

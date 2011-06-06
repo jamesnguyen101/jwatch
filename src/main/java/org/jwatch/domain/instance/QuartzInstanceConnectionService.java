@@ -22,6 +22,7 @@ package org.jwatch.domain.instance;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
+import org.jwatch.listener.notification.Listener;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.SettingsUtil;
 
@@ -39,6 +40,7 @@ public class QuartzInstanceConnectionService
    static Logger log = Logger.getLogger(QuartzInstanceConnectionService.class);
 
    private static HashMap<String, QuartzInstanceConnection> quartzInstanceMap;
+   private static HashMap<String, Listener> listenersMap;
 
    public static HashMap<String, QuartzInstanceConnection> getQuartzInstanceMap()
    {
@@ -50,6 +52,16 @@ public class QuartzInstanceConnectionService
       QuartzInstanceConnectionService.quartzInstanceMap = quartzInstanceMap;
    }
 
+   public static HashMap<String, Listener> getListenersMap()
+   {
+      return listenersMap;
+   }
+
+   public static void setListenersMap(HashMap<String, Listener> listenersMap)
+   {
+      QuartzInstanceConnectionService.listenersMap = listenersMap;
+   }
+
    public static void putQuartzInstance(QuartzInstanceConnection quartzInstanceConnection)
    {
       if (quartzInstanceConnection != null)
@@ -59,6 +71,18 @@ public class QuartzInstanceConnectionService
             quartzInstanceMap = new HashMap();
          }
          quartzInstanceMap.put(quartzInstanceConnection.getUuid(), quartzInstanceConnection);
+      }
+   }
+
+   public static void putListener(Listener listener)
+   {
+      if (listener != null)
+      {
+         if (listenersMap == null)
+         {
+            listenersMap = new HashMap();
+         }
+         listenersMap.put(listener.getUUID(), listener);
       }
    }
 
