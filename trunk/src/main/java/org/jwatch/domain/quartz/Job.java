@@ -20,6 +20,7 @@
 
 package org.jwatch.domain.quartz;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -41,6 +42,8 @@ public class Job
    private String jobName;
    private boolean shouldRecover;
    private Map jobDataMap;
+   private Date nextFireTime;
+   private int numTriggers;
 
    public String getQuartzInstanceId()
    {
@@ -130,21 +133,45 @@ public class Job
    public void setJobDataMap(Map jobDataMap)
    {
       this.jobDataMap = jobDataMap;
-   }@Override
-    public String toString()
-{
-   final StringBuilder sb = new StringBuilder();
-   sb.append("Job");
-   sb.append("{quartzInstanceId='").append(quartzInstanceId).append('\'');
-   sb.append(", schedulerInstanceId='").append(schedulerInstanceId).append('\'');
-   sb.append(", description='").append(description).append('\'');
-   sb.append(", durability=").append(durability);
-   sb.append(", group='").append(group).append('\'');
-   sb.append(", jobClass='").append(jobClass).append('\'');
-   sb.append(", jobName='").append(jobName).append('\'');
-   sb.append(", shouldRecover=").append(shouldRecover);
-   sb.append(", jobDataMap=").append(jobDataMap);
-   sb.append('}');
-   return sb.toString();
-}
+   }
+
+   public int getNumTriggers()
+   {
+      return numTriggers;
+   }
+
+   public void setNumTriggers(int numTriggers)
+   {
+      this.numTriggers = numTriggers;
+   }
+
+   public Date getNextFireTime()
+   {
+      return nextFireTime;
+   }
+
+   public void setNextFireTime(Date nextFireTime)
+   {
+      this.nextFireTime = nextFireTime;
+   }
+
+   @Override
+   public String toString()
+   {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Job");
+      sb.append("{quartzInstanceId='").append(quartzInstanceId).append('\'');
+      sb.append(", schedulerInstanceId='").append(schedulerInstanceId).append('\'');
+      sb.append(", description='").append(description).append('\'');
+      sb.append(", durability=").append(durability);
+      sb.append(", group='").append(group).append('\'');
+      sb.append(", jobClass='").append(jobClass).append('\'');
+      sb.append(", jobName='").append(jobName).append('\'');
+      sb.append(", shouldRecover=").append(shouldRecover);
+      sb.append(", jobDataMap=").append(jobDataMap);
+      sb.append(", nextFireTime=").append(nextFireTime);
+      sb.append(", numTriggers=").append(numTriggers);
+      sb.append('}');
+      return sb.toString();
+   }
 }

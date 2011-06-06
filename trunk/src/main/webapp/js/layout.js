@@ -2,7 +2,7 @@ Ext.onReady(function() {
 
 	tabPanel = new Ext.TabPanel({
 		region : 'center',
-		autoScroll : true,
+		autoScroll : false,
 		enableTabScroll : true,
 		border : true,
 		frame : false,
@@ -57,13 +57,11 @@ Ext.onReady(function() {
 						'Quartz Instances Not Configured, click on the Add link to get started.',
 						'Nothing to see...', 'icon-n-warn', 8000);
 			}
-			// tabPanel.activeTab = 0;
 		}
 	});
 	var jobStore;
-    var triggerStore;
+	var triggerStore;
 	doLoadInstance = function(instance) {
-		// console.log(instance);
 		var html = '<div style="background-color:#DCF6D8;height: 42px; width: 100%;">'
 				+ '<table width="100%">'
 				+ '<tr>'
@@ -79,71 +77,97 @@ Ext.onReady(function() {
 					totalProperty : 'totalCount',
 					fields : ['jobName', 'description', 'group', 'jobClass',
 							'schedulerInstanceId', 'durability',
-							'shouldRecover', 'quartzInstanceId']
+							'shouldRecover', 'quartzInstanceId',
+							'nextFireTime', 'numTriggers']
 				});
 		jobStore.setDefaultSort('jobName', 'ASC');
+
 		var jobGrid = new Ext.grid.GridPanel({
+			title : 'Jobs',
 			store : jobStore,
 			closable : false,
-			columns : [{
-				id : 'colaction',
-				header : '',
-				width : 40,
-				sortable : false,
-				renderer : function(value, p, record) {
-					return '<a href="javascript:void(0);" onClick="getTriggersForJob(\''
-							+ record.data.quartzInstanceId
-							+ '\',\''
-							+ record.data.schedulerInstanceId
-							+ '\',\''
-							+ record.data.jobName
-							+ '\',\''
-							+ record.data.group
-							+ '\')">XX</a>';
-				}
-			}, {
+			columns : [
+					/*
+					 * { id : 'colaction', header : '', width : 40, sortable :
+					 * false, renderer : function(value, p, record) { return '<div
+					 * style="padding:5px;text-align:center;vertical-align:middle;"><a
+					 * href="javascript:void(0);" onClick="getTriggersForJob(\'' +
+					 * record.data.quartzInstanceId + '\',\'' +
+					 * record.data.schedulerInstanceId + '\',\'' +
+					 * record.data.jobName + '\',\'' + record.data.group +
+					 * '\')"><img ext:qtip="Click to view Job triggers."
+					 * ext:qtitle="Show Triggers" src="images/info_16.png"
+					 * border="0"/></a></div>'; } },
+					 */{
 				id : 'jobName',
 				header : "Job",
 				width : 160,
 				sortable : true,
+				css : 'font-size: 13px;font-weight:bold;color:#333333;',
 				dataIndex : 'jobName',
 				renderer : function(value, p, record) {
-					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
-							+ Ext.util.Format.htmlEncode(record.data.jobName)
-							+ '</font></div>'
+					return Ext.util.Format.htmlEncode(record.data.jobName);
+				}
+			}, {
+				id : 'nextFireTime',
+				header : "Next FireTime",
+				width : 170,
+				sortable : true,
+				css : 'font-size: 13px;font-weight:bold;color:#333333;',
+				dataIndex : 'nextFireTime'
+			}, {
+				id : 'numTriggers',
+				header : "Triggers",
+				width : 80,
+				sortable : true,
+				css : 'font-size: 13px;font-weight:bold;color:#333333;text-align:center;',
+				dataIndex : 'numTriggers',
+				renderer : function(value, p, record) {
+					if (record.data.numTriggers < 1) {
+						return '0';
+					} else {
+						return '<a ext:qtip="Click to view Job triggers." ext:qtitle="Show Triggers" href="javascript:void(0);" onClick="getTriggersForJob(\''
+								+ record.data.quartzInstanceId
+								+ '\',\''
+								+ record.data.schedulerInstanceId
+								+ '\',\''
+								+ record.data.jobName
+								+ '\',\''
+								+ record.data.group
+								+ '\')">'
+								+ record.data.numTriggers + '</a>';
+					}
 				}
 			}, {
 				id : 'group',
 				header : "Group",
 				width : 100,
 				sortable : true,
+				css : 'font-size: 13px;font-weight:bold;color:#333333;',
 				dataIndex : 'group',
 				renderer : function(value, p, record) {
-					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
-							+ Ext.util.Format.htmlEncode(record.data.group)
-							+ '</font></div>'
+					return Ext.util.Format.htmlEncode(record.data.group);
 				}
 			}, {
 				id : 'jobClass',
 				header : "Job Class",
 				width : 180,
 				sortable : true,
+				css : 'font-size: 13px;font-weight:bold;color:#333333;',
 				dataIndex : 'jobClass',
 				renderer : function(value, p, record) {
-					return '<div style="padding:5px;"><font style="font-size: 13px;font-weight:bold;color:#333333">'
-							+ Ext.util.Format.htmlEncode(record.data.jobClass)
-							+ '</font></div>'
+					return Ext.util.Format.htmlEncode(record.data.jobClass);
 				}
 			}, {
 				id : 'durability',
 				header : "Durable",
-				width : 50,
+				width : 80,
 				sortable : true,
 				dataIndex : 'durability',
+				css : '',
 				renderer : function(value, p, record) {
 					if (record.data.durability == true) {
-						return '<div style="text-align:center;margin:auto;">'
-								+ '<img src="images/ok.png" border="0"></div>';
+						return '<div style="text-align:center;"><img src="images/ok.png" border="0"/></div>';
 					}
 				}
 			}, {
@@ -152,30 +176,24 @@ Ext.onReady(function() {
 				width : 80,
 				sortable : true,
 				dataIndex : 'shouldRecover',
+				css : 'padding:3px;',
 				renderer : function(value, p, record) {
 					if (record.data.shouldRecover == true) {
-						return '<div style="text-align:center;margin:auto;">'
-								+ '<img src="images/ok.png" border="0"></div>';
+						return '<div style="text-align:center;"><img src="images/ok.png" border="0"/></div>';
 					}
 				}
 			}],
 			stripeRows : true,
 			autoScroll : true,
 			autoExpandColumn : 'jobName',
-			region : 'center',
 			floatable : false,
-			// width : '60%',
-			autoWidth : true,
-			height : 350,
-			autoHeight : false,
-			border : true,
+			autoHeight : true,
+			border : false,
 			frame : false,
 			loadMask : true
 		});
 		var triggerGrid = new Ext.Panel({
-			title : 'Job Triggers',
-			height : 50,
-			region : 'south',
+			title : 'Job Trace',
 			store : triggerStore,
 			closable : false,
 			columns : [{
@@ -203,7 +221,7 @@ Ext.onReady(function() {
 			}, {
 				id : 'jobClass',
 				header : "Job Class",
-				width : 180,
+				width : 250,
 				sortable : true,
 				dataIndex : 'jobClass',
 				renderer : function(value, p, record) {
@@ -239,7 +257,6 @@ Ext.onReady(function() {
 			stripeRows : true,
 			autoScroll : true,
 			autoExpandColumn : 'jobName',
-			region : 'center',
 			floatable : false,
 			border : false,
 			frame : false,
@@ -251,24 +268,39 @@ Ext.onReady(function() {
 					border : false,
 					frame : false,
 					html : html,
+					layout : 'fit',
 					region : 'north'
 				});
-
+		var innerTabPanel = new Ext.TabPanel({
+					region : 'center',
+					autoScroll : true,
+					activeTab : 0,
+					enableTabScroll : true,
+					border : false,
+					frame : false,
+					plain : false,
+					autoHeight : false,
+					height : '100%',
+					layoutOnTabChange : true,// IMPORTANT!
+					items : [jobGrid, triggerGrid]
+				});
 		var sampleTab = new Ext.Panel({
 					id : instance.uuid,
 					iconCls : 'ico-clock',
 					frame : false,
+					autoScroll : true,
 					border : false,
 					plain : true,
 					autoWidth : true,
 					title : '<font style="font-size:14px">' + instance.userName
 							+ '@' + instance.host + ':' + instance.port
 							+ '</font>',
-					// height : 50,
-					autoHeight : true,
+					height : 50,
 					closable : true,
-					items : [schedPanel, jobGrid, triggerGrid]
+					layout : 'border',
+					items : [schedPanel, innerTabPanel]
 				});
+		innerTabPanel.doLayout();
 		tabPanel.add(sampleTab);
 		tabPanel.setActiveTab(instance.uuid);
 
@@ -317,7 +349,6 @@ Ext.onReady(function() {
 							},
 							border : false,
 							renderTo : 'sched-select',
-							// html: 'aaaa'
 							items : [schedbox]
 						});
 			}
@@ -335,11 +366,11 @@ Ext.onReady(function() {
 		var ii = document.getElementById('infoid');
 		ii.innerHTML = '<a href="javascript:void(0);" onClick="getSchedulerInfo(\''
 				+ id
-				+ '\')"><img src="images/info.png" style="padding-bottom:5px;padding-left:7px;border:0;"/></a>';
+				+ '\')"><img  ext:qtip="Click to view Schedule details." ext:qtitle="Show Schedule"  src="images/info.png" style="padding-bottom:5px;padding-left:7px;border:0;"/></a>';
 		var ir = document.getElementById('refreshid');
-		ir.innerHTML = '<a href="javascript:void(0);" onClick="refreshScheduler('
+		ir.innerHTML = '<a href="javascript:void(0);" onClick="getJobsForScheduler(\''
 				+ id
-				+ ')"><img src="images/refresh.png" style="padding-bottom:5px;padding-left:7px;border:0;"/></a>';
+				+ '\')"><img  ext:qtip="Click to refresh Jobs list." ext:qtitle="Refresh Jobs"  src="images/refresh.png" style="padding-bottom:5px;padding-left:7px;border:0;"/></a>';
 	}
 
 	getSchedulerInfo = function(id) {
@@ -367,7 +398,7 @@ Ext.onReady(function() {
 						width : 620,
 						frame : true,
 						autoScroll : true,
-						height : 380,
+						height : 320,
 						closeAction : 'close',
 						plain : true,
 						border : true,
@@ -411,9 +442,5 @@ Ext.onReady(function() {
 				}
 			}
 		});
-	}
-
-	getTriggersForJob = function(qid, sis, jname, gname) {
-		console.log(qid);
 	}
 });

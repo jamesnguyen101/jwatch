@@ -23,6 +23,7 @@ package org.jwatch.util;
 import org.apache.commons.lang.StringUtils;
 
 import javax.management.openmbean.CompositeDataSupport;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
@@ -72,6 +73,18 @@ public class JMXUtil
       else if (compositeDataSupport.getCompositeType().getType(key).getClassName().equals("java.lang.Boolean"))
       {
          return compositeDataSupport.get(key);
+      }
+      else if (compositeDataSupport.getCompositeType().getType(key).getClassName().equals("java.util.Date"))
+      {
+         return (Date) compositeDataSupport.get(key);
+      }
+      else if (compositeDataSupport.getCompositeType().getType(key).getClassName().equals("java.lang.Integer"))
+      {
+         return (Integer) compositeDataSupport.get(key);
+      }
+      else if (compositeDataSupport.getCompositeType().getType(key).getClassName().equals("java.lang.Long"))
+      {
+         return (Long) compositeDataSupport.get(key);
       }
       return new Object();
    }

@@ -209,6 +209,8 @@ public class QuartzInstanceHandler
                   {
                      Job job = jobs.get(i);
                      JSONObject o = JSONObject.fromObject(job);
+                     o.put("nextFireTime", Tools.toStringFromDate(job.getNextFireTime(), null));
+                     
                      jsonArray.add(o);
                   }
                }
@@ -278,6 +280,11 @@ public class QuartzInstanceHandler
             {
                Trigger trigger = triggers.get(i);
                JSONObject object = JSONObject.fromObject(trigger);
+               object.put("endTime", Tools.toStringFromDate(trigger.getEndTime(), null));
+               object.put("finaleFireTime", Tools.toStringFromDate(trigger.getFinalFireTime(), null));
+               object.put("nextFireTime", Tools.toStringFromDate(trigger.getNextFireTime(), null));
+               object.put("previousFireTime", Tools.toStringFromDate(trigger.getPreviousFireTime(), null));
+               object.put("startTime", Tools.toStringFromDate(trigger.getStartTime(), null));
                jsonArray.add(object);
             }
          }

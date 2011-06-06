@@ -46,6 +46,7 @@ public class TestConnect
 
                   Listener listener = new Listener();
                   connection.addNotificationListener(objectName, listener, null, null);
+                  System.out.println("added listener " + objectName.getCanonicalName());
 
                   List groupNames = (List) connection.getAttribute(objectName, "JobGroupNames");
                   TabularData cdata = (TabularData) connection.getAttribute(objectName, "CurrentlyExecutingJobs");

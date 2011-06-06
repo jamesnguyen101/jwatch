@@ -56,4 +56,6 @@ public interface QuartzJMXAdapter
    Scheduler getScheduler(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
 
    List<Trigger> getTriggersForJob(QuartzInstanceConnection quartzInstanceConnection, String scheduleID, String jobName, String groupName) throws Exception;
+
+   void attachListener(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
 }
