@@ -20,7 +20,7 @@
 
 package org.jwatch.domain.adapter;
 
-import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstance;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.domain.quartz.Trigger;
 
@@ -35,27 +35,27 @@ import java.util.List;
  */
 public interface QuartzJMXAdapter
 {
-   public String getVersion(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   public String getVersion(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
    //public Scheduler getScheduler
 
-   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   public void printAttributes(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
-   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   public void printConstructors(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
-   public void printOperations(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   public void printOperations(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
-   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   public void printNotifications(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
-   void printClassName(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   void printClassName(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
-   Scheduler populateScheduler(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception;
+   Scheduler populateScheduler(QuartzInstance quartzInstance, ObjectName objectName) throws Exception;
 
-   List getJobDetails(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
+   List getJobDetails(QuartzInstance quartzInstance, String scheduleID) throws Exception;
 
-   Scheduler getScheduler(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
+   Scheduler getScheduler(QuartzInstance quartzInstance, String scheduleID) throws Exception;
 
-   List<Trigger> getTriggersForJob(QuartzInstanceConnection quartzInstanceConnection, String scheduleID, String jobName, String groupName) throws Exception;
+   List<Trigger> getTriggersForJob(QuartzInstance quartzInstance, String scheduleID, String jobName, String groupName) throws Exception;
 
-   void attachListener(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception;
+   void attachListener(QuartzInstance quartzInstance, String scheduleID) throws Exception;
 }

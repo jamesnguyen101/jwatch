@@ -41,6 +41,8 @@ public class JobEvent
    private boolean recovering;
    private long jobRunTime;
    private int refireCount;
+   private String schedulerId;
+   private String quartzInstanceId;
 
    public String getCalendarName()
    {
@@ -172,6 +174,26 @@ public class JobEvent
       this.refireCount = refireCount;
    }
 
+   public String getSchedulerId()
+   {
+      return schedulerId;
+   }
+
+   public void setSchedulerId(String schedulerId)
+   {
+      this.schedulerId = schedulerId;
+   }
+
+   public String getQuartzInstanceId()
+   {
+      return quartzInstanceId;
+   }
+
+   public void setQuartzInstanceId(String quartzInstanceId)
+   {
+      this.quartzInstanceId = quartzInstanceId;
+   }
+
    @Override
    public String toString()
    {
@@ -190,6 +212,8 @@ public class JobEvent
       sb.append(", recovering=").append(recovering);
       sb.append(", jobRunTime=").append(jobRunTime);
       sb.append(", refireCount=").append(refireCount);
+      sb.append(", schedulerId='").append(schedulerId).append('\'');
+      sb.append(", quartzInstanceId='").append(quartzInstanceId).append('\'');
       sb.append('}');
       return sb.toString();
    }

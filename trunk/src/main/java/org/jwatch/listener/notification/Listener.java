@@ -27,6 +27,8 @@ import javax.management.openmbean.CompositeDataSupport;
 import java.util.Date;
 
 /**
+ * One notification listener per scheduler/QuartzInstance combo.
+ *
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 13, 2011 5:28:59 PM
  */
@@ -76,10 +78,15 @@ public class Listener implements NotificationListener
                event.setSchedulerName((String) JMXUtil.convertToType(compositeDataSupport, "schedulerName"));
                event.setTriggerGroup((String) JMXUtil.convertToType(compositeDataSupport, "triggerGroup"));
                event.setTriggerName((String) JMXUtil.convertToType(compositeDataSupport, "triggerName"));
+               String[] arr = this.getUUID().split("@@");
+               String uuid = arr[0];
+               String scheduleID = arr[1];
+               event.setSchedulerId(scheduleID);
+               event.setQuartzInstanceId(uuid);
                System.out.println("Event: " + event);
 
                // publish the event
-               
+
             }
          }
       }

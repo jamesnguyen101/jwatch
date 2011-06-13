@@ -21,7 +21,7 @@ package org.jwatch.domain.connection;
 
 import org.apache.commons.lang.StringUtils;
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
-import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstance;
 import org.jwatch.listener.settings.QuartzConfig;
 
 import javax.management.ObjectName;
@@ -62,18 +62,18 @@ public class QuartzConnectUtil
    /**
     * util method for printing all methods an mbean has exposed.
     *
-    * @param quartzInstanceConnection
+    * @param quartzInstance
     */
-   public static void printMBeanProperties(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName)
+   public static void printMBeanProperties(QuartzInstance quartzInstance, ObjectName objectName)
    {
       try
       {
-         QuartzJMXAdapter adapter = quartzInstanceConnection.getJmxAdapter();
-         adapter.printAttributes(quartzInstanceConnection, objectName);
-         adapter.printConstructors(quartzInstanceConnection, objectName);
-         adapter.printOperations(quartzInstanceConnection, objectName);
-         adapter.printNotifications(quartzInstanceConnection, objectName);
-         adapter.printClassName(quartzInstanceConnection, objectName);
+         QuartzJMXAdapter adapter = quartzInstance.getJmxAdapter();
+         adapter.printAttributes(quartzInstance, objectName);
+         adapter.printConstructors(quartzInstance, objectName);
+         adapter.printOperations(quartzInstance, objectName);
+         adapter.printNotifications(quartzInstance, objectName);
+         adapter.printClassName(quartzInstance, objectName);
       }
       catch (Throwable t)
       {

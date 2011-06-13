@@ -20,8 +20,8 @@
 package org.jwatch.listener.settings;
 
 import org.apache.log4j.Logger;
-import org.jwatch.domain.instance.QuartzInstanceConnection;
-import org.jwatch.domain.instance.QuartzInstanceConnectionService;
+import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.instance.QuartzInstanceService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -47,7 +47,7 @@ public class SettingsLoaderListener implements ServletContextListener
          log.info("Starting Settings Load...");
          long start = Calendar.getInstance().getTimeInMillis();
 
-         QuartzInstanceConnectionService.initQuartzInstanceMap();
+         QuartzInstanceService.initQuartzInstanceMap();
 
          long end = Calendar.getInstance().getTimeInMillis();
          log.info("Settings startup completed in: " + (end - start) + " ms");
@@ -61,19 +61,19 @@ public class SettingsLoaderListener implements ServletContextListener
    public void contextDestroyed(ServletContextEvent event)
    {
       log.info("Shutting down SettingsLoaderListener service...");
-      Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
+      Map qMap = QuartzInstanceService.getQuartzInstanceMap();
       for (Iterator it = qMap.entrySet().iterator(); it.hasNext();)
       {
          Map.Entry entry = (Map.Entry) it.next();
          String k = (String) entry.getKey();
-         QuartzInstanceConnection quartzInstanceConnection = (QuartzInstanceConnection) qMap.get(k);
+         QuartzInstance quartzInstance = (QuartzInstance) qMap.get(k);
          try
          {
-            quartzInstanceConnection.getJmxConnector().close();
+            quartzInstance.getJmxConnector().close();
          }
          catch (IOException e)
          {
-            log.error("Failed to close Connection: " + quartzInstanceConnection, e);
+            log.error("Failed to close Connection: " + quartzInstance, e);
          }
       }
    }

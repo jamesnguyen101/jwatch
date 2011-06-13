@@ -25,8 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
-import org.jwatch.domain.instance.QuartzInstanceConnection;
-import org.jwatch.domain.instance.QuartzInstanceConnectionService;
+import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.instance.QuartzInstanceService;
 import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.domain.quartz.Trigger;
@@ -55,15 +55,15 @@ public class QuartzInstanceHandler
     * Returns instances found. For now, it pulls from the config file every time.
     *
     * @return
-    * @see org.jwatch.domain.instance.QuartzInstanceConnectionService
+    * @see org.jwatch.domain.instance.QuartzInstanceService
     */
    public static JSONObject loadInstances()
    {
       JSONObject jsonObject = new JSONObject();
       try
       {
-         QuartzInstanceConnectionService.initQuartzInstanceMap();
-         Map qMap = QuartzInstanceConnectionService.getQuartzInstanceMap();
+         QuartzInstanceService.initQuartzInstanceMap();
+         Map qMap = QuartzInstanceService.getQuartzInstanceMap();
          if (qMap != null)
          {
             JSONArray jsonArray = new JSONArray();
@@ -71,8 +71,8 @@ public class QuartzInstanceHandler
             {
                Map.Entry entry = (Map.Entry) it.next();
                String k = (String) entry.getKey();
-               QuartzInstanceConnection quartzInstanceConnection = (QuartzInstanceConnection) qMap.get(k);
-               QuartzConfig quartzConfig = new QuartzConfig(quartzInstanceConnection);
+               QuartzInstance quartzInstance = (QuartzInstance) qMap.get(k);
+               QuartzConfig quartzConfig = new QuartzConfig(quartzInstance);
                JSONObject jo = JSONObject.fromObject(quartzConfig);
                jsonArray.add(jo);
             }
@@ -110,8 +110,8 @@ public class QuartzInstanceHandler
          {
             QuartzConfig quartzConfig = new QuartzConfig(Tools.generateUUID(), host, port, username, password);
             QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-            QuartzInstanceConnection quartzInstanceConnection = quartzConnectService.initInstance(quartzConfig);
-            if (quartzInstanceConnection == null)
+            QuartzInstance quartzInstance = quartzConnectService.initInstance(quartzConfig);
+            if (quartzInstance == null)
             {
                log.error(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
                jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_FAILED_CONNECT + " " + quartzConfig);
@@ -119,7 +119,7 @@ public class QuartzInstanceHandler
             }
 
             // persist
-            QuartzInstanceConnectionService.putQuartzInstance(quartzInstanceConnection);
+            QuartzInstanceService.putQuartzInstance(quartzInstance);
             SettingsUtil.saveConfig(quartzConfig);
             jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, quartzConfig);
             jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
@@ -156,11 +156,11 @@ public class QuartzInstanceHandler
       String qiid = StringUtils.trimToNull((String) map.get("uuid"));
       try
       {
-         QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
-         if (quartzInstanceConnection != null)
+         QuartzInstance quartzInstance = QuartzInstanceService.getQuartzInstanceByID(qiid);
+         if (quartzInstance != null)
          {
             int totalCount = 0;
-            List<Scheduler> schedulers = quartzInstanceConnection.getSchedulerList();
+            List<Scheduler> schedulers = quartzInstance.getSchedulerList();
             if (schedulers != null && schedulers.size() > 0)
             {
                totalCount = schedulers.size();
@@ -198,10 +198,10 @@ public class QuartzInstanceHandler
             String[] arr = uuidInstance.split("@@");
             String uuid = arr[0];
             String scheduleID = arr[1];
-            QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(uuid);
-            if (quartzInstanceConnection != null)
+            QuartzInstance quartzInstance = QuartzInstanceService.getQuartzInstanceByID(uuid);
+            if (quartzInstance != null)
             {
-               List<Job> jobs = quartzInstanceConnection.getJmxAdapter().getJobDetails(quartzInstanceConnection, scheduleID);
+               List<Job> jobs = quartzInstance.getJmxAdapter().getJobDetails(quartzInstance, scheduleID);
                if (jobs != null && jobs.size() > 0)
                {
                   totalCount = jobs.size();
@@ -239,10 +239,10 @@ public class QuartzInstanceHandler
             String[] arr = uuidInstance.split("@@");
             String uuid = arr[0];
             String scheduleID = arr[1];
-            QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(uuid);
-            if (quartzInstanceConnection != null)
+            QuartzInstance quartzInstance = QuartzInstanceService.getQuartzInstanceByID(uuid);
+            if (quartzInstance != null)
             {
-               Scheduler scheduler = quartzInstanceConnection.getJmxAdapter().getScheduler(quartzInstanceConnection, scheduleID);
+               Scheduler scheduler = quartzInstance.getJmxAdapter().getScheduler(quartzInstance, scheduleID);
                if (scheduler != null)
                {
                   jsonObject = JSONObject.fromObject(scheduler);
@@ -271,8 +271,8 @@ public class QuartzInstanceHandler
       int totalCount = 0;
       try
       {
-         QuartzInstanceConnection quartzInstanceConnection = QuartzInstanceConnectionService.getQuartzInstanceByID(qiid);
-         List<Trigger> triggers = quartzInstanceConnection.getJmxAdapter().getTriggersForJob(quartzInstanceConnection, scheduleID, jobName, groupName);
+         QuartzInstance quartzInstance = QuartzInstanceService.getQuartzInstanceByID(qiid);
+         List<Trigger> triggers = quartzInstance.getJmxAdapter().getTriggersForJob(quartzInstance, scheduleID, jobName, groupName);
          if (triggers != null && triggers.size() > 0)
          {
             totalCount = triggers.size();

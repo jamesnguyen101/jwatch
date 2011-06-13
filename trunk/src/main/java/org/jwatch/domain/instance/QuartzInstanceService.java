@@ -22,7 +22,6 @@ package org.jwatch.domain.instance;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
-import org.jwatch.listener.notification.Listener;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.SettingsUtil;
 
@@ -35,60 +34,37 @@ import java.util.List;
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 7, 2011 5:04:10 PM
  */
-public class QuartzInstanceConnectionService
+public class QuartzInstanceService
 {
-   static Logger log = Logger.getLogger(QuartzInstanceConnectionService.class);
+   static Logger log = Logger.getLogger(QuartzInstanceService.class);
 
-   private static HashMap<String, QuartzInstanceConnection> quartzInstanceMap;
-   private static HashMap<String, Listener> listenersMap;
+   private static HashMap<String, QuartzInstance> quartzInstanceMap;
 
-   public static HashMap<String, QuartzInstanceConnection> getQuartzInstanceMap()
+   public static HashMap<String, QuartzInstance> getQuartzInstanceMap()
    {
       return quartzInstanceMap;
    }
 
-   public static void setQuartzInstanceMap(HashMap<String, QuartzInstanceConnection> quartzInstanceMap)
+   public static void setQuartzInstanceMap(HashMap<String, QuartzInstance> quartzInstanceMap)
    {
-      QuartzInstanceConnectionService.quartzInstanceMap = quartzInstanceMap;
+      QuartzInstanceService.quartzInstanceMap = quartzInstanceMap;
    }
 
-   public static HashMap<String, Listener> getListenersMap()
+   public static void putQuartzInstance(QuartzInstance quartzInstance)
    {
-      return listenersMap;
-   }
-
-   public static void setListenersMap(HashMap<String, Listener> listenersMap)
-   {
-      QuartzInstanceConnectionService.listenersMap = listenersMap;
-   }
-
-   public static void putQuartzInstance(QuartzInstanceConnection quartzInstanceConnection)
-   {
-      if (quartzInstanceConnection != null)
+      if (quartzInstance != null)
       {
          if (quartzInstanceMap == null)
          {
             quartzInstanceMap = new HashMap();
          }
-         quartzInstanceMap.put(quartzInstanceConnection.getUuid(), quartzInstanceConnection);
-      }
-   }
-
-   public static void putListener(Listener listener)
-   {
-      if (listener != null)
-      {
-         if (listenersMap == null)
-         {
-            listenersMap = new HashMap();
-         }
-         listenersMap.put(listener.getUUID(), listener);
+         quartzInstanceMap.put(quartzInstance.getUuid(), quartzInstance);
       }
    }
 
    /**
     * loads configurations from the settings file and attempts connections on each config. It then populates in-memory
-    * map with {@link QuartzInstanceConnection} objects.
+    * map with {@link QuartzInstance} objects.
     */
    public static void initQuartzInstanceMap()
    {
@@ -105,10 +81,10 @@ public class QuartzInstanceConnectionService
          {
             QuartzConfig config = configs.get(i);
             QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-            QuartzInstanceConnection quartzInstanceConnection = null;
+            QuartzInstance quartzInstance = null;
             try
             {
-               quartzInstanceConnection = quartzConnectService.initInstance(config);
+               quartzInstance = quartzConnectService.initInstance(config);
                config.setConnected(true);
             }
             catch (Throwable t)
@@ -116,10 +92,10 @@ public class QuartzInstanceConnectionService
                log.error("Failed to connect! " + config.toString(), t);
             }
 
-            if (quartzInstanceConnection != null)
+            if (quartzInstance != null)
             {
-               QuartzInstanceConnectionService.putQuartzInstance(quartzInstanceConnection);
-               log.debug(quartzInstanceConnection.toString());
+               QuartzInstanceService.putQuartzInstance(quartzInstance);
+               log.debug(quartzInstance.toString());
             }
          }
       }
@@ -131,7 +107,7 @@ public class QuartzInstanceConnectionService
     * @param qiid
     * @return
     */
-   public static QuartzInstanceConnection getQuartzInstanceByID(String qiid)
+   public static QuartzInstance getQuartzInstanceByID(String qiid)
    {
       if (quartzInstanceMap != null)
       {
