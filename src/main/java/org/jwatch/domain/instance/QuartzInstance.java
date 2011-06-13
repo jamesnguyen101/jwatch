@@ -21,14 +21,16 @@ package org.jwatch.domain.instance;
 
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
 import org.jwatch.domain.quartz.Scheduler;
+import org.jwatch.listener.notification.Listener;
 import org.jwatch.listener.settings.QuartzConfig;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
+import java.util.HashMap;
 import java.util.List;
 
 /**
- * Represents a Scheduler on a Quartz Instance. A server can have more than one QuartzInstance. One Quartz Instance can have many Schedulers.
+ * Represents one Quartz Instance. A server can have more than one QuartzInstance. One Quartz Instance can have many Schedulers.
  * This object is kept in mem
  * for easy fetching {@link org.jwatch.listener.settings.QuartzConfig}, thus avoiding having to instantiate a JMX
  * connection for every call.
@@ -36,23 +38,25 @@ import java.util.List;
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 6, 2011 4:57:14 PM
  */
-public class QuartzInstanceConnection extends QuartzConfig
+public class QuartzInstance extends QuartzConfig
 {
    private MBeanServerConnection mBeanServerConnection;
 
    private QuartzJMXAdapter jmxAdapter;
    private List<Scheduler> schedulerList;
+   private static HashMap<String, Listener> listenersMap;
+
    /**
     * needed for shutdown. *
     */
    private JMXConnector jmxConnector;
 
-   public QuartzInstanceConnection(String uuid, String host, int port, String userName, String password)
+   public QuartzInstance(String uuid, String host, int port, String userName, String password)
    {
       super(uuid, host, port, userName, password);
    }
 
-   public QuartzInstanceConnection(QuartzConfig config)
+   public QuartzInstance(QuartzConfig config)
    {
       super(config.getUuid(), config.getHost(), config.getPort(), config.getUserName(), config.getPassword());
    }
@@ -97,11 +101,33 @@ public class QuartzInstanceConnection extends QuartzConfig
       this.jmxConnector = jmxConnector;
    }
 
+   public static HashMap<String, Listener> getListenersMap()
+   {
+      return listenersMap;
+   }
+
+   public static void setListenersMap(HashMap<String, Listener> _listenersMap)
+   {
+      listenersMap = _listenersMap;
+   }
+
+   public static void putListener(Listener listener)
+   {
+      if (listener != null)
+      {
+         if (listenersMap == null)
+         {
+            listenersMap = new HashMap();
+         }
+         listenersMap.put(listener.getUUID(), listener);
+      }
+   }
+
    @Override
    public String toString()
    {
       final StringBuilder sb = new StringBuilder();
-      sb.append("QuartzInstanceConnection");
+      sb.append("QuartzInstance");
       sb.append("{mBeanServerConnection=").append(mBeanServerConnection);
       sb.append(", jmxAdapter=").append(jmxAdapter);
       sb.append(", schedulerList=").append(schedulerList);

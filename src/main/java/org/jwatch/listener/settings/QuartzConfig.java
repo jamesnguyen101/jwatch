@@ -19,7 +19,7 @@
  **/
 package org.jwatch.listener.settings;
 
-import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstance;
 
 /**
  * Class contains connection settings and unique ID for a specific quartz instance.
@@ -52,14 +52,14 @@ public class QuartzConfig
       this.password = password;
    }
 
-   public QuartzConfig(QuartzInstanceConnection quartzInstanceConnection)
+   public QuartzConfig(QuartzInstance quartzInstance)
    {
-      this.uuid = quartzInstanceConnection.getUuid();
-      this.host = quartzInstanceConnection.getHost();
-      this.port = quartzInstanceConnection.getPort();
+      this.uuid = quartzInstance.getUuid();
+      this.host = quartzInstance.getHost();
+      this.port = quartzInstance.getPort();
       this.uname = this.getUname();
-      this.userName = quartzInstanceConnection.getUserName();
-      this.password = quartzInstanceConnection.getPassword();
+      this.userName = quartzInstance.getUserName();
+      this.password = quartzInstance.getPassword();
    }
 
    public String getUname()

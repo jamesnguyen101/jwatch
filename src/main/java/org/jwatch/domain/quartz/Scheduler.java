@@ -29,10 +29,21 @@ import javax.management.ObjectName;
  */
 public class Scheduler
 {
+   /**
+    * this.quartzInstanceUUID + "@@" + this.instanceId
+    */
    private String uuidInstance;
+
+   /**
+    * Unique Quartz Instance ID
+    */
    private String quartzInstanceUUID;
    private String name;
    private ObjectName objectName;
+
+   /**
+    * Unique Scheduler Id.
+    */
    private String instanceId;
    private boolean started;
    private boolean shutdown;

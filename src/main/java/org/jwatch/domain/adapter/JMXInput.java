@@ -20,7 +20,7 @@
 
 package org.jwatch.domain.adapter;
 
-import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstance;
 
 import javax.management.ObjectName;
 
@@ -32,7 +32,7 @@ import javax.management.ObjectName;
  */
 public class JMXInput
 {
-   private QuartzInstanceConnection quartzInstanceConnection;
+   private QuartzInstance quartzInstance;
    private String[] signature;
    private String operation;
    private Object[] parameters;
@@ -42,23 +42,23 @@ public class JMXInput
    {
    }
 
-   public JMXInput(QuartzInstanceConnection quartzInstanceConnection, String[] signature, String operation, Object[] parameters, ObjectName objectName)
+   public JMXInput(QuartzInstance quartzInstance, String[] signature, String operation, Object[] parameters, ObjectName objectName)
    {
-      this.quartzInstanceConnection = quartzInstanceConnection;
+      this.quartzInstance = quartzInstance;
       this.signature = signature;
       this.operation = operation;
       this.parameters = parameters;
       this.objectName = objectName;
    }
 
-   public QuartzInstanceConnection getQuartzInstanceConnection()
+   public QuartzInstance getQuartzInstanceConnection()
    {
-      return quartzInstanceConnection;
+      return quartzInstance;
    }
 
-   public void setQuartzInstanceConnection(QuartzInstanceConnection quartzInstanceConnection)
+   public void setQuartzInstanceConnection(QuartzInstance quartzInstance)
    {
-      this.quartzInstanceConnection = quartzInstanceConnection;
+      this.quartzInstance = quartzInstance;
    }
 
    public String[] getSignature()

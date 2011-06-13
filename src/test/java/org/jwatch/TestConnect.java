@@ -6,7 +6,7 @@ package test.java.org.jwatch;
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
 import org.jwatch.domain.connection.QuartzConnectUtil;
-import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstance;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.notification.Listener;
 import org.jwatch.listener.settings.QuartzConfig;
@@ -29,19 +29,19 @@ public class TestConnect
       {
          QuartzConfig config = new QuartzConfig(Tools.generateUUID(), "localhost", 2911, null, null);
          QuartzConnectService quartzConnectService = new QuartzConnectServiceImpl();
-         QuartzInstanceConnection quartzInstanceConnection = quartzConnectService.initInstance(config);
-         if (quartzInstanceConnection != null)
+         QuartzInstance quartzInstance = quartzConnectService.initInstance(config);
+         if (quartzInstance != null)
          {
-            List shList = quartzInstanceConnection.getSchedulerList();
+            List shList = quartzInstance.getSchedulerList();
             if (shList != null && shList.size() > 0)
             {
                for (int i = 0; i < shList.size(); i++)
                {
                   Scheduler scheduler = (Scheduler) shList.get(i);
 
-                  QuartzConnectUtil.printMBeanProperties(quartzInstanceConnection, scheduler.getObjectName());
+                  QuartzConnectUtil.printMBeanProperties(quartzInstance, scheduler.getObjectName());
 
-                  MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+                  MBeanServerConnection connection = quartzInstance.getMBeanServerConnection();
                   ObjectName objectName = scheduler.getObjectName();
 
                   Listener listener = new Listener();

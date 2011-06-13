@@ -28,16 +28,16 @@ import java.util.List;
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 28, 2011 5:01:26 PM
  */
-public class QuartzInstanceConnectionUtil
+public class QuartzInstanceUtil
 {
    /**
-    * @param quartzInstanceConnection
+    * @param quartzInstance
     * @param instanceId               scheduler-instance-id
     * @return
     */
-   public static Scheduler getSchedulerByInstanceId(QuartzInstanceConnection quartzInstanceConnection, String instanceId)
+   public static Scheduler getSchedulerByInstanceId(QuartzInstance quartzInstance, String instanceId)
    {
-      List list = quartzInstanceConnection.getSchedulerList();
+      List list = quartzInstance.getSchedulerList();
       if (list != null && list.size() > 0)
       {
          for (int i = 0; i < list.size(); i++)

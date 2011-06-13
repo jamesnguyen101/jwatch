@@ -22,7 +22,7 @@ package org.jwatch.domain.connection;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.adapter.QuartzJMXAdapter;
 import org.jwatch.domain.adapter.QuartzJMXAdapterFactory;
-import org.jwatch.domain.instance.QuartzInstanceConnection;
+import org.jwatch.domain.instance.QuartzInstance;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.listener.notification.Listener;
 import org.jwatch.listener.settings.QuartzConfig;
@@ -50,7 +50,7 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
     * {@inheritDoc}
     */
    @Override
-   public QuartzInstanceConnection initInstance(QuartzConfig config) throws Exception
+   public QuartzInstance initInstance(QuartzConfig config) throws Exception
    {
       // create url / add credentials map
       Map<String, String[]> env = new HashMap<String, String[]>();
@@ -62,26 +62,28 @@ public class QuartzConnectServiceImpl implements QuartzConnectService
       // test connection
       ObjectName mBName = new ObjectName("quartz:type=QuartzScheduler,*");
       Set<ObjectName> names = connection.queryNames(mBName, null);
-      QuartzInstanceConnection quartzInstanceConnection = new QuartzInstanceConnection(config);
-      quartzInstanceConnection.setMBeanServerConnection(connection);
-      quartzInstanceConnection.setJmxConnector(connector);
+      QuartzInstance quartzInstance = new QuartzInstance(config);
+      quartzInstance.setMBeanServerConnection(connection);
+      quartzInstance.setJmxConnector(connector);
 
       // build scheduler list
       List<Scheduler> schList = new ArrayList<Scheduler>();
       for (ObjectName objectName : names)   // for each scheduler.
       {
          QuartzJMXAdapter jmxAdapter = QuartzJMXAdapterFactory.initQuartzJMXAdapter(objectName, connection);
-         quartzInstanceConnection.setJmxAdapter(jmxAdapter);
+         quartzInstance.setJmxAdapter(jmxAdapter);
 
-         Scheduler scheduler = jmxAdapter.populateScheduler(quartzInstanceConnection, objectName);
+         Scheduler scheduler = jmxAdapter.populateScheduler(quartzInstance, objectName);
          schList.add(scheduler);
 
          // attach listener
          Listener listener = new Listener();
+         listener.setUUID(scheduler.getUuidInstance());
          connection.addNotificationListener(objectName, listener, null, null);
-        log.info("added listener " + objectName.getCanonicalName());
+         log.info("added listener " + objectName.getCanonicalName());
+         QuartzInstance.putListener(listener);
       }
-      quartzInstanceConnection.setSchedulerList(schList);
-      return quartzInstanceConnection;
+      quartzInstance.setSchedulerList(schList);
+      return quartzInstance;
    }
 }

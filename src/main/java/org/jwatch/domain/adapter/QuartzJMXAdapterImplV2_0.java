@@ -21,8 +21,8 @@ package org.jwatch.domain.adapter;
 
 import org.apache.log4j.Logger;
 import org.jwatch.domain.connection.QuartzConnectUtil;
-import org.jwatch.domain.instance.QuartzInstanceConnection;
-import org.jwatch.domain.instance.QuartzInstanceConnectionUtil;
+import org.jwatch.domain.instance.QuartzInstance;
+import org.jwatch.domain.instance.QuartzInstanceUtil;
 import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.domain.quartz.Trigger;
@@ -53,9 +53,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    static Logger log = Logger.getLogger(QuartzJMXAdapterImplV2_0.class);
 
    @Override
-   public String getVersion(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public String getVersion(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
-      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      MBeanServerConnection connection = quartzInstance.getMBeanServerConnection();
       String quartzVersion = (String) connection.getAttribute(objectName, "Version");
       if (!QuartzConnectUtil.isSupported(quartzVersion))
       {
@@ -65,9 +65,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    }
 
    @Override
-   public void printAttributes(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public void printAttributes(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
+      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanAttributeInfo[] attributeInfos = info.getAttributes();
       for (int i = 0; i < attributeInfos.length; i++)
       {
@@ -76,9 +76,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printConstructors(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public void printConstructors(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
+      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanConstructorInfo[] arr = info.getConstructors();
       for (int i = 0; i < arr.length; i++)
       {
@@ -87,9 +87,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printOperations(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public void printOperations(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
+      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanOperationInfo[] arr = info.getOperations();
       for (int i = 0; i < arr.length; i++)
       {
@@ -98,9 +98,9 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       }
    }
 
-   public void printNotifications(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public void printNotifications(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
+      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(objectName);
       MBeanNotificationInfo[] arr = info.getNotifications();
       for (int i = 0; i < arr.length; i++)
       {
@@ -110,17 +110,17 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    }
 
    @Override
-   public void printClassName(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public void printClassName(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
-      MBeanInfo info = quartzInstanceConnection.getMBeanServerConnection().getMBeanInfo(objectName);
+      MBeanInfo info = quartzInstance.getMBeanServerConnection().getMBeanInfo(objectName);
       System.out.println(info.getClassName() + " Desc: " + info.getDescription());
    }
 
    @Override
-   public Scheduler populateScheduler(QuartzInstanceConnection quartzInstanceConnection, ObjectName objectName) throws Exception
+   public Scheduler populateScheduler(QuartzInstance quartzInstance, ObjectName objectName) throws Exception
    {
       Scheduler scheduler = new Scheduler();
-      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      MBeanServerConnection connection = quartzInstance.getMBeanServerConnection();
       scheduler.setObjectName(objectName);
       scheduler.setName((String) connection.getAttribute(objectName, "SchedulerName"));
       scheduler.setInstanceId((String) connection.getAttribute(objectName, "SchedulerInstanceId"));
@@ -130,17 +130,17 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
       scheduler.setShutdown((Boolean) connection.getAttribute(objectName, "Shutdown"));
       scheduler.setStarted((Boolean) connection.getAttribute(objectName, "Started"));
       scheduler.setStandByMode((Boolean) connection.getAttribute(objectName, "StandbyMode"));
-      scheduler.setQuartzInstanceUUID(quartzInstanceConnection.getUuid());
-      scheduler.setVersion(this.getVersion(quartzInstanceConnection, objectName));
+      scheduler.setQuartzInstanceUUID(quartzInstance.getUuid());
+      scheduler.setVersion(this.getVersion(quartzInstance, objectName));
       return scheduler;
    }
 
    @Override
-   public List getJobDetails(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
+   public List getJobDetails(QuartzInstance quartzInstance, String scheduleID) throws Exception
    {
       List<Job> jobs = null;
-      Scheduler scheduler = QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
-      JMXInput jmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName()}, "AllJobDetails", new Object[]{scheduleID}, scheduler.getObjectName());
+      Scheduler scheduler = QuartzInstanceUtil.getSchedulerByInstanceId(quartzInstance, scheduleID);
+      JMXInput jmxInput = new JMXInput(quartzInstance, new String[]{String.class.getName()}, "AllJobDetails", new Object[]{scheduleID}, scheduler.getObjectName());
 
       TabularDataSupport tdata = (TabularDataSupport) callJMXAttribute(jmxInput);
       if (tdata != null)
@@ -170,7 +170,7 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
             job.setJobClass((String) JMXUtil.convertToType(compositeDataSupport, "jobClass"));
 
             // get Next Fire Time for job
-            List<Trigger> triggers = this.getTriggersForJob(quartzInstanceConnection, scheduleID, job.getJobName(), job.getGroup());
+            List<Trigger> triggers = this.getTriggersForJob(quartzInstance, scheduleID, job.getJobName(), job.getGroup());
             try
             {
                if (triggers != null && triggers.size() > 0)
@@ -199,19 +199,19 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    }
 
    @Override
-   public Scheduler getScheduler(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
+   public Scheduler getScheduler(QuartzInstance quartzInstance, String scheduleID) throws Exception
    {
-      return QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
+      return QuartzInstanceUtil.getSchedulerByInstanceId(quartzInstance, scheduleID);
    }
 
    @Override
-   public List<Trigger> getTriggersForJob(QuartzInstanceConnection quartzInstanceConnection, String scheduleID, String jobName, String groupName) throws Exception
+   public List<Trigger> getTriggersForJob(QuartzInstance quartzInstance, String scheduleID, String jobName, String groupName) throws Exception
    {
-      Scheduler scheduler = QuartzInstanceConnectionUtil.getSchedulerByInstanceId(quartzInstanceConnection, scheduleID);
+      Scheduler scheduler = QuartzInstanceUtil.getSchedulerByInstanceId(quartzInstance, scheduleID);
 
       List<Trigger> triggers = null;
 
-      JMXInput jmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName(), String.class.getName()}, "getTriggersOfJob", new Object[]{jobName, groupName}, scheduler.getObjectName());
+      JMXInput jmxInput = new JMXInput(quartzInstance, new String[]{String.class.getName(), String.class.getName()}, "getTriggersOfJob", new Object[]{jobName, groupName}, scheduler.getObjectName());
       List list = (List) callJMXOperation(jmxInput);
       if (list != null && list.size() > 0)
       {
@@ -237,7 +237,7 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
 
             try // get current trigger state
             {
-               JMXInput stateJmxInput = new JMXInput(quartzInstanceConnection, new String[]{String.class.getName(), String.class.getName()}, "getTriggerState", new Object[]{trigger.getName(), trigger.getGroup()}, scheduler.getObjectName());
+               JMXInput stateJmxInput = new JMXInput(quartzInstance, new String[]{String.class.getName(), String.class.getName()}, "getTriggerState", new Object[]{trigger.getName(), trigger.getGroup()}, scheduler.getObjectName());
                String state = (String) callJMXOperation(stateJmxInput);
                trigger.setSTriggerState(state);
             }
@@ -265,22 +265,22 @@ public class QuartzJMXAdapterImplV2_0 implements QuartzJMXAdapter
    }
 
    @Override
-   public void attachListener(QuartzInstanceConnection quartzInstanceConnection, String scheduleID) throws Exception
+   public void attachListener(QuartzInstance quartzInstance, String scheduleID) throws Exception
    {
       //To change body of implemented methods use File | Settings | File Templates.
    }
 
    private Object callJMXAttribute(JMXInput jmxInput) throws Exception
    {
-      QuartzInstanceConnection quartzInstanceConnection = jmxInput.getQuartzInstanceConnection();
-      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      QuartzInstance quartzInstance = jmxInput.getQuartzInstanceConnection();
+      MBeanServerConnection connection = quartzInstance.getMBeanServerConnection();
       return (Object) connection.getAttribute(jmxInput.getObjectName(), jmxInput.getOperation());
    }
 
    private Object callJMXOperation(JMXInput jmxInput) throws Exception
    {
-      QuartzInstanceConnection quartzInstanceConnection = jmxInput.getQuartzInstanceConnection();
-      MBeanServerConnection connection = quartzInstanceConnection.getMBeanServerConnection();
+      QuartzInstance quartzInstance = jmxInput.getQuartzInstanceConnection();
+      MBeanServerConnection connection = quartzInstance.getMBeanServerConnection();
       return connection.invoke(jmxInput.getObjectName(), jmxInput.getOperation(), jmxInput.getParameters(), jmxInput.getSignature());
    }
 }
