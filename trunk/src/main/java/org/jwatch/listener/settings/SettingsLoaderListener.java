@@ -19,10 +19,13 @@
  **/
 package org.jwatch.listener.settings;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.jwatch.domain.instance.QuartzInstance;
 import org.jwatch.domain.instance.QuartzInstanceService;
+import org.jwatch.listener.notification.EventService;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
@@ -46,6 +49,15 @@ public class SettingsLoaderListener implements ServletContextListener
       {
          log.info("Starting Settings Load...");
          long start = Calendar.getInstance().getTimeInMillis();
+
+         ServletContext sc = event.getServletContext();
+         if (sc != null)
+         {
+            String sMaxEvents = sc.getInitParameter("maxevents");
+            int maxEvents = NumberUtils.toInt(sMaxEvents, EventService.DEFAULT_MAX_EVENT_LIST_SIZE);
+            sc.setAttribute("maxevents", maxEvents);      // expose to other servlets
+            EventService.setMaxEventListSize(maxEvents);
+         }
 
          QuartzInstanceService.initQuartzInstanceMap();
 

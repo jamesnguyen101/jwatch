@@ -107,7 +107,21 @@ table.header .rightTD a:hover {
 /******** ICONS ********/
 
 .ico-clock {
+    vertical-align: middle;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 3px;
+    margin-bottom: 2px;
     background-image: url( "../images/clock.png" ) !important;
+}
+
+.ico-proc {
+    vertical-align: middle;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 3px;
+    margin-bottom: 2px;
+    background-image: url( "../images/process.png" ) !important;
 }
 
 .icon-n-info {
@@ -147,10 +161,11 @@ table.header .rightTD a:hover {
     color: #555;
 }
 
-table.panelTbl td{
+table.panelTbl td {
     font-size: 12px;
 }
-table.panelTbl td.label{
+
+table.panelTbl td.label {
     font-size: 12px;
     font-weight: bold;
 }

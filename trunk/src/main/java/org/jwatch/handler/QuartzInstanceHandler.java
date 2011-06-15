@@ -30,6 +30,8 @@ import org.jwatch.domain.instance.QuartzInstanceService;
 import org.jwatch.domain.quartz.Job;
 import org.jwatch.domain.quartz.Scheduler;
 import org.jwatch.domain.quartz.Trigger;
+import org.jwatch.listener.notification.EventService;
+import org.jwatch.listener.notification.JobEvent;
 import org.jwatch.listener.settings.QuartzConfig;
 import org.jwatch.util.GlobalConstants;
 import org.jwatch.util.JSONUtil;
@@ -38,6 +40,7 @@ import org.jwatch.util.Tools;
 
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -210,7 +213,7 @@ public class QuartzInstanceHandler
                      Job job = jobs.get(i);
                      JSONObject o = JSONObject.fromObject(job);
                      o.put("nextFireTime", Tools.toStringFromDate(job.getNextFireTime(), null));
-                     
+
                      jsonArray.add(o);
                   }
                }
@@ -296,6 +299,39 @@ public class QuartzInstanceHandler
       {
          log.error(t);
          jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_LOAD_TRIGGERS);
+      }
+      return jsonObject;
+   }
+
+   public static JSONObject getJobsList(Map map)
+   {
+      JSONObject jsonObject = new JSONObject();
+      JSONArray jsonArray = new JSONArray();
+      int totalCount = 0;
+      try
+      {
+         LinkedList events = EventService.getEventList();
+         if (events != null && events.size() > 0)
+         {
+            for (int i = 0; i < events.size(); i++)
+            {
+               JobEvent jEvent = (JobEvent) events.get(i);
+               JSONObject object = JSONObject.fromObject(jEvent);
+               object.put("fireTime", Tools.toStringFromDate(jEvent.getFireTime(), null));
+               object.put("nextFireTime", Tools.toStringFromDate(jEvent.getNextFireTime(), null));
+               object.put("previousFireTime", Tools.toStringFromDate(jEvent.getPreviousFireTime(), null));
+               object.put("scheduledFireTime", Tools.toStringFromDate(jEvent.getScheduledFireTime(), null));
+               jsonArray.add(object);
+            }
+         }
+         jsonObject.put(GlobalConstants.JSON_DATA_ROOT_KEY, jsonArray);
+         jsonObject.put(GlobalConstants.JSON_SUCCESS_KEY, true);
+         jsonObject.put(GlobalConstants.JSON_TOTAL_COUNT, totalCount);
+      }
+      catch (Throwable t)
+      {
+         log.error(t);
+         jsonObject = JSONUtil.buildError(GlobalConstants.MESSAGE_ERR_TAIL_JOBS);
       }
       return jsonObject;
    }
