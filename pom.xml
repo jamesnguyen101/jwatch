@@ -26,6 +26,7 @@
     </developers>
 
     <build>
+        <finalName>jwatch</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -65,18 +66,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
-                <!--
-    <configuration>
-        <webResources>
-            <resource>
-                -->
-                <!-- this is relative to the pom.xml directory -->
-                <!--
-                                            <directory>resource2</directory>
-                                        </resource>
-                                    </webResources>
-                                </configuration>
-                -->
             </plugin>
         </plugins>
     </build>
@@ -112,13 +101,13 @@
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jboss</artifactId>
-            <version>2.0.0</version>
-        </dependency>
--->
+        <!--
+                <dependency>
+                    <groupId>org.quartz-scheduler</groupId>
+                    <artifactId>quartz-jboss</artifactId>
+                    <version>2.0.0</version>
+                </dependency>
+        -->
         <dependency>
             <groupId>javax.management</groupId>
             <artifactId>jmx-stdext</artifactId>

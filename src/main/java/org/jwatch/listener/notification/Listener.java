@@ -83,10 +83,10 @@ public class Listener implements NotificationListener
                String scheduleID = arr[1];
                event.setSchedulerId(scheduleID);
                event.setQuartzInstanceId(uuid);
-               System.out.println("Event: " + event);
+               //System.out.println("Event: " + event);
 
                // publish the event
-
+               EventService.addEvent(event);
             }
          }
       }
@@ -111,7 +111,7 @@ public class Listener implements NotificationListener
        * refireCount=javax.management.openmbean.SimpleType(name=java.lang.Integer),
        * scheduledFireTime=javax.management.openmbean.SimpleType(name=java.util.Date),
        * schedulerName=javax.management.openmbean.SimpleType(name=java.lang.String),
-       * triggerGroup=javax.management.openmbean.SimpleType(name=java.lang.String), 
+       * triggerGroup=javax.management.openmbean.SimpleType(name=java.lang.String),
        * triggerName=javax.management.openmbean.SimpleType(name=java.lang.String)}
        */
    }

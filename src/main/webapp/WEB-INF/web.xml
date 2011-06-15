@@ -26,6 +26,11 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
+    <context-param>
+        <param-name>maxevents</param-name>
+        <param-value>1000</param-value>
+        <description>How many job execution events to keep in the queue.</description>
+    </context-param>
 
     <listener>
         <listener-class>org.jwatch.listener.settings.SettingsLoaderListener</listener-class>

@@ -38,4 +38,5 @@ public class GlobalConstants
    public static final String MESSAGE_CONFIG_EMPTY = "Empty configuration details.";
    public static final String MESSAGE_ERR_LOAD_SCHEDULER = "Error loading Scheduler!";
    public static final String MESSAGE_ERR_LOAD_TRIGGERS = "Error loading Triggers for Job";
+   public static final String MESSAGE_ERR_TAIL_JOBS = "Error monitoring jobs list.";
 }
