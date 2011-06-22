@@ -1,7 +1,7 @@
 /*
  
 */
-package test.java.org.jwatch;
+package org.jwatch;
 
 import org.jwatch.domain.connection.QuartzConnectService;
 import org.jwatch.domain.connection.QuartzConnectServiceImpl;
