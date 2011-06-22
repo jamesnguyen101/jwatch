@@ -6,7 +6,7 @@
 
     <groupId>org.jwatch.multi</groupId>
     <artifactId>jwatch-parent</artifactId>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
     <version>1.0</version>
     <name>JWatch Parent Project</name>
 
@@ -15,7 +15,7 @@
         <module>qtest</module>
     </modules>
 
-    <build>
+<!--    <build>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -37,5 +37,5 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+    </dependencies>-->
 </project>
