@@ -5,7 +5,7 @@ When deployed in a web-app container, the QTest war will auto-create a random am
 To enable monitoring, you must ensure that the container has JMX available, and that the Quartz Scheduler is exposing it's innards:
 
 VM Parameters:
--Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote=true
 -Dcom.sun.management.jmxremote.port=2911
 -Dcom.sun.management.jmxremote.ssl=false
 -Dcom.sun.management.jmxremote.authenticate=false

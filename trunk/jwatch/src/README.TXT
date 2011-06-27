@@ -10,7 +10,7 @@ Note that JWatch communicates with Quartz Instances on any server anywhere, usin
 JMX exposed and Quartz must also be exposing its internal MBeans.
 
 Example VM Parameters:
--Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote=true
 -Dcom.sun.management.jmxremote.port=2911
 -Dcom.sun.management.jmxremote.ssl=false
 -Dcom.sun.management.jmxremote.authenticate=false
