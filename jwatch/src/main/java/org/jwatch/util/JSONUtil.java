@@ -30,7 +30,8 @@ import java.util.Map;
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: Apr 8, 2011 4:28:10 PM
  */
-public class JSONUtil {
+public class
+      JSONUtil {
     public static Map<String, String> convertRequestToMap(HttpServletRequest request) {
         Map returnMap = new HashMap();
         if (request.getParameterMap() != null) {
