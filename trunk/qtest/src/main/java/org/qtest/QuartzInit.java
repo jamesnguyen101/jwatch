@@ -20,28 +20,31 @@
 
 package org.qtest;
 
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-
+import org.apache.log4j.Logger;
 import org.qtest.job.HelloJob;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import org.quartz.Trigger;
-import static org.quartz.TriggerBuilder.newTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * @author <a href="mailto:royrusso@gmail.com">Roy Russo</a>
  *         Date: 6/28/11 1:51 PM
  */
-public class QuartzInit {
+public class QuartzInit implements ServletContextListener {
     private Scheduler sched = null;
     private Scheduler sched3 = null;
     private Scheduler sched2 = null;
+    static Logger log = Logger.getLogger(QuartzInit.class);
 
     public void contextInitialized(ServletContextEvent event) {
         try {
@@ -67,7 +70,7 @@ public class QuartzInit {
 
             // Tell quartz to schedule the job using our trigger
             sched.scheduleJob(job, trigger);
-
+            log.info("Job Created: " + job);
 
             // Job #2
             // define the job and tie it to our HelloJob class
@@ -86,6 +89,7 @@ public class QuartzInit {
 
             // Tell quartz to schedule the job using our trigger
             sched.scheduleJob(job, trigger);
+            log.info("Job Created: " + job);
 
             // Group #2, Job #1
             // define the job and tie it to our HelloJob class
@@ -104,7 +108,7 @@ public class QuartzInit {
 
             // Tell quartz to schedule the job using our trigger
             sched.scheduleJob(job, trigger);
-
+            log.info("Job Created: " + job);
 
             // second scheduler
             // Tell Quartz to look out out for quartz2.properties
@@ -127,6 +131,7 @@ public class QuartzInit {
             // Tell quartz to schedule the job using our trigger
             sched2.addJob(jobx, true);
             sched2.scheduleJob(triggerx);
+            log.info("Job Created: " + jobx);
             Trigger triggerx2 = newTrigger().forJob(jobx)
                     .withIdentity("myTriggerx2", "groupx2")
                     .startNow()
@@ -161,6 +166,7 @@ public class QuartzInit {
                     sched3.scheduleJob(jd1, tr1);
                 }
             }
+            log.info("Finished job loop");
         } catch (Throwable se) {
             se.printStackTrace();
         }
