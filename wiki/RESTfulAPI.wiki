@@ -5,8 +5,31 @@
 This document describes how to interact with JWatch RESTful API. As a standard convention, we will assume JWatch is accessible via: 
 http://localhost:8081/jwatch/
 
+== Getting all Quartz Instances ==
 
-= Job Monitoring API =
+{{{
+http://localhost:8081/jwatch/ui?action=get_all_instances
+}}}
+
+{{{
+{
+  data: [
+    {
+      connected: false,
+      host: "localhost",
+      password: "",
+      port: 2911,
+      uname: "localhost2911",
+      userName: "",
+      uuid: "f5c1edd6-0101-4c93-9162-58ca104b8fdb"
+    }
+  ],
+  totalCount: 1,
+  success: true
+}
+}}}
+
+== Job Monitoring API ==
 
 The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. 
 
@@ -58,5 +81,3 @@ Sample output:
       triggerName: "t_1"
     },...
 }}}
-
-You can have the results sorted by passing a property name and direction.
