@@ -6,9 +6,11 @@ This document describes how to interact with JWatch RESTful API. As a standard c
 http://localhost:8081/jwatch/
 
 
-= Details =
+= Job Monitoring API =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. Currently there is no capability available to filter results by Quartz Instance or Scheduler.
+
+== Getting all Executed Jobs in Queue ==
+{{{
+http://localhost:8081/jwatch/ui?action=monitor_jobs
+}}}
