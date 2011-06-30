@@ -166,6 +166,53 @@ http://localhost:8081/jwatch/ui?action=get_jobs&uuidInstance=[uuidInstance]
     },...
 }}}
 
+=== Get Triggers For a Job ===
+
+{{{
+http://localhost:8081/jwatch/ui?action=get_job_triggers&groupName=[group]&jobName=[jobName]&sid=[instanceId]&uuid=[quartzInstanceUUID]
+}}}
+
+Sample Output:
+{{{
+{
+  data: [
+    {
+      STriggerState: "NORMAL",
+      calendarName: "",
+      description: "",
+      finalFireTime: null,
+      fireInstanceId: "1309458445830",
+      group: "groupx",
+      jobGroup: "groupx",
+      jobName: "myJobx",
+      misfireInstruction: 0,
+      name: "myTriggerx",
+      nextFireTime: "06/30/11 16:42:25 EDT",
+      previousFireTime: "06/30/11 16:34:55 EDT",
+      priority: 5,
+      startTime: "06/30/11 14:27:25 EDT"
+    },
+    {
+      STriggerState: "NORMAL",
+      calendarName: "",
+      description: "",
+      finalFireTime: null,
+      fireInstanceId: "1309458445790",
+      group: "groupx2",
+      jobGroup: "groupx",
+      jobName: "myJobx",
+      misfireInstruction: 0,
+      name: "myTriggerx2",
+      nextFireTime: "06/30/11 17:27:25 EDT",
+      previousFireTime: "06/30/11 16:27:25 EDT",
+      priority: 5,
+      startTime: "06/30/11 14:27:25 EDT"
+    }
+  ],
+  success: true,
+  totalCount: 2
+}
+}}}
 
 == Job Monitoring API ==
 
