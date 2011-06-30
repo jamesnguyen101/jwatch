@@ -76,6 +76,51 @@ Sample output:
     },...
 }}}
 
+=== Get all Jobs for a Scheduler ===
+
+To obtain all jobs from a Scheduler, you will need to know the uuidInstance value, using the call above. It's important to note that the uuidInstance value is simply a concatenation of the Quartz Instance ID and the Scheduler Instance Id with @@ in between:
+
+{{{
+<uuidInstance>@@<instanceId>
+}}}
+
+{{{
+http://localhost:8081/jwatch/ui?action=get_jobs&uuidInstance=<uuidInstance>
+}}}
+
+{{{
+{
+  success: true,
+  data: [
+    {
+      description: "Some rand jobx",
+      durability: true,
+      group: "group1",
+      jobClass: "org.qtest.job.HelloJob",
+      jobDataMap: null,
+      jobName: "j_0",
+      nextFireTime: "06/30/11 16:34:00 EDT",
+      numTriggers: 1,
+      quartzInstanceId: "f5c1edd6-0101-4c93-9162-58ca104b8fdb",
+      schedulerInstanceId: "MEGA",
+      shouldRecover: false
+    },
+    {
+      description: "Some rand jobx",
+      durability: true,
+      group: "group0",
+      jobClass: "org.qtest.job.HelloJob",
+      jobDataMap: null,
+      jobName: "j_0",
+      nextFireTime: "06/30/11 16:34:00 EDT",
+      numTriggers: 1,
+      quartzInstanceId: "f5c1edd6-0101-4c93-9162-58ca104b8fdb",
+      schedulerInstanceId: "MEGA",
+      shouldRecover: false
+    },...
+}}}
+
+
 == Job Monitoring API ==
 
 The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. 
