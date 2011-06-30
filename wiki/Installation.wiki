@@ -29,7 +29,12 @@ Sample JVM parameters:
 
 = Configuration Options =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+To increase the amount of executed jobs that JWatch keeps in the queue, you will need to modify the jwatch.war web.xml file. By default, JWatch keeps 1000 executed jobs in memory.
+
+{{{
+    <context-param>
+        <param-name>maxevents</param-name>
+        <param-value>1000</param-value>
+        <description>How many job execution events to keep in the queue.</description>
+    </context-param>
+}}}
