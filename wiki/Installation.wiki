@@ -3,6 +3,8 @@
 
 = Installation Instructions =
 
+_Note: At present, JWatch can only interact with Quartz 2.0+. Future releases will support older versions of Quartz._
+
   # Get the most recent WAR file from the [http://code.google.com/p/jwatch/downloads/list Downloads Section]. It should be labeled something like jwatch-(VERSION).zip
   # Unpack the zip file and deploy the war within it to your application server.
   # Point your browser to http://HOST:PORT/jwatch
