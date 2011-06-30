@@ -1,13 +1,16 @@
 #summary Installing and Configuring JWatch Quartz Monitor
 #labels Featured,Phase-Deploy
 
-= Installation =
+= Installation Instructions =
 
   # Get the most recent WAR file from the [http://code.google.com/p/jwatch/downloads/list Downloads Section]. It should be labeled something like jwatch-(VERSION).zip
   # Unpack the zip file and deploy the war within it to your application server.
   # Point your browser to http://HOST:PORT/jwatch
-  # Note: You must have JMX enabled for JWatch to communicate. 
+  # Note: You must have JMX enabled for JWatch to communicate with your Quartz instances: 
 
+== Creating a Quartz Monitor Connection ==
+
+ 
 
 = Configuration Options =
 
