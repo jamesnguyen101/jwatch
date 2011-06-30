@@ -76,16 +76,62 @@ Sample output:
     },...
 }}}
 
+=== Get Scheduler Information ===
+
+To obtain Scheduler Information, you will need to know the uuidInstance value, using the call above. It's important to note that the uuidInstance value is simply a concatenation of the Quartz Instance ID and the Scheduler Instance Id with @@ in between:
+
+{{{
+[uuidInstance]@@[instanceId]
+}}}
+
+{{{
+http://localhost:8081/jwatch/ui?action=get_scheduler_info&uuidInstance=[uuidInstance]
+}}}
+
+{{{
+{
+  instanceId: "NON_CLUSTERED",
+  jobStoreClassName: "org.quartz.simpl.RAMJobStore",
+  name: "MyScheduler",
+  objectName: {
+    canonicalKeyPropertyListString: "instance=NON_CLUSTERED,name=MyScheduler,type=QuartzScheduler",
+    canonicalName: "quartz:instance=NON_CLUSTERED,name=MyScheduler,type=QuartzScheduler",
+    domain: "quartz",
+    domainPattern: false,
+    keyPropertyList: {
+      instance: "NON_CLUSTERED",
+      name: "MyScheduler",
+      type: "QuartzScheduler"
+    },
+    keyPropertyListString: "type=QuartzScheduler,name=MyScheduler,instance=NON_CLUSTERED",
+    pattern: false,
+    propertyListPattern: false,
+    propertyPattern: false,
+    propertyValuePattern: false
+  },
+  quartzInstanceUUID: "f5c1edd6-0101-4c93-9162-58ca104b8fdb",
+  shutdown: false,
+  standByMode: false,
+  started: true,
+  threadPoolClassName: "org.quartz.simpl.SimpleThreadPool",
+  threadPoolSize: 3,
+  uuidInstance: "f5c1edd6-0101-4c93-9162-58ca104b8fdb@@NON_CLUSTERED",
+  version: "2.0.0",
+  success: true
+}
+}}}
+
+
 === Get all Jobs for a Scheduler ===
 
 To obtain all jobs from a Scheduler, you will need to know the uuidInstance value, using the call above. It's important to note that the uuidInstance value is simply a concatenation of the Quartz Instance ID and the Scheduler Instance Id with @@ in between:
 
 {{{
-<uuidInstance>@@<instanceId>
+[uuidInstance]@@[instanceId]
 }}}
 
 {{{
-http://localhost:8081/jwatch/ui?action=get_jobs&uuidInstance=<uuidInstance>
+http://localhost:8081/jwatch/ui?action=get_jobs&uuidInstance=[uuidInstance]
 }}}
 
 {{{
