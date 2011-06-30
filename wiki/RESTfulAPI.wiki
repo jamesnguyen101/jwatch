@@ -5,7 +5,7 @@
 This document describes how to interact with JWatch RESTful API. As a standard convention, we will assume JWatch is accessible via: 
 http://localhost:8081/jwatch/
 
-== Getting all Quartz Instances ==
+== Get all Quartz Instances ==
 
 This will return all currently configured Quartz Instances.
 
