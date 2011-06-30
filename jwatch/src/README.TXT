@@ -1,10 +1,8 @@
 For information about JWatch, please visit the JWatch Home: http://code.google.com/p/jwatch/
 
-Quick and Dirty setup:
+Installation and Configuration Options can be found here:
 
-1. Get the WAR from the JWatch Download page: http://code.google.com/p/jwatch/
-2. Deploy the WAR to your Appserver.
-3. Point your browser to http://<HOST>:<PORT>/jwatch
+http://code.google.com/p/jwatch/wiki/Installation
 
 Note that JWatch communicates with Quartz Instances on any server anywhere, using JMX, so your Quartz instances must have
 JMX exposed and Quartz must also be exposing its internal MBeans.
