@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Installing and Configuring JWatch Quartz Monitor
 #labels Featured,Phase-Deploy
 
 = Installation =
