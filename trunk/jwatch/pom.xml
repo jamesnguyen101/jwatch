@@ -4,7 +4,7 @@
     <groupId>org.jwatch</groupId>
     <artifactId>jwatch</artifactId>
     <packaging>war</packaging>
-    <version>0.2</version>
+    <version>0.8</version>
 
     <name>jwatch</name>
     <url>http://maven.apache.org</url>
