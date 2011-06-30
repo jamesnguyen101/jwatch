@@ -24,7 +24,8 @@ Sample JVM parameters:
 == Creating a Quartz Monitor ==
 
   # Click the "Add New Quartz Instance" link on the top-right <img src="http://jwatch.googlecode.com/svn/trunk/site/images/ss/addinstance.png"/>
-  # aaaa
+  # Configure your Quartz Instance using the dialogue rendered:
+<img src="http://jwatch.googlecode.com/svn/trunk/site/images/ss/addnewinstance.png"/>
 
 = Configuration Options =
 
