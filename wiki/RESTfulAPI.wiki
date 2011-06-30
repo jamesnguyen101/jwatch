@@ -73,7 +73,7 @@ Sample output:
       threadPoolSize: 3,
       uuidInstance: "f5c1edd6-0101-4c93-9162-58ca104b8fdb@@AUTO2",
       version: "2.0.0"
-    },
+    },...
 }}}
 
 == Job Monitoring API ==
