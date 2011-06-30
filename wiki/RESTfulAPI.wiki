@@ -8,7 +8,9 @@ http://localhost:8081/jwatch/
 
 = Job Monitoring API =
 
-The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. Currently there is no capability available to filter results by Quartz Instance or Scheduler.
+The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. 
+
+_Currently there is no capability available to filter or sort results by Quartz Instance or Scheduler. This will be added in a future release._
 
 == Getting all Executed Jobs in Queue ==
 
