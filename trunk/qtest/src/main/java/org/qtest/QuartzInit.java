@@ -146,8 +146,8 @@ public class QuartzInit implements ServletContextListener {
             schedFact = new org.quartz.impl.StdSchedulerFactory();
             sched3 = schedFact.getScheduler();
             sched3.start();
-            int groups = 2;
-            int jobspergroup = 2;
+            int groups = 3;
+            int jobspergroup = 3;
             for (int g = 0; g < groups; g++) {
                 String group = "group" + g;
                 for (int i = 0; i < jobspergroup; i++) {
