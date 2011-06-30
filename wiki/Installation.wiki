@@ -10,8 +10,7 @@
 
 == Creating a Quartz Monitor Connection ==
 
-JWatch communicates with Quartz Instances on any server anywhere using JMX, so your Quartz instances must have
-JMX exposed and Quartz must also be exposing its internal MBeans.
+JWatch communicates with Quartz Instances using JMX, so the JVM Quartz is running on, will have to have JMX enabled, *and* Quartz must also be exposing its internal MBeans.
 
 Sample JVM parameters:
 {{{
