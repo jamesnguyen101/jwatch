@@ -11,6 +11,50 @@ http://localhost:8081/jwatch/
 The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. Currently there is no capability available to filter results by Quartz Instance or Scheduler.
 
 == Getting all Executed Jobs in Queue ==
+
+To obtain all the jobs executed and sitting in the queue:
 {{{
 http://localhost:8081/jwatch/ui?action=monitor_jobs
 }}}
+
+Sample output:
+{{{
+{
+  data: [
+    {
+      calendarName: "",
+      fireTime: "06/30/11 15:59:01 EDT",
+      jobGroup: "group0",
+      jobName: "j_1",
+      jobRunTime: 0,
+      nextFireTime: "06/30/11 16:00:01 EDT",
+      previousFireTime: "06/30/11 15:58:01 EDT",
+      quartzInstanceId: "f5c1edd6-0101-4c93-9162-58ca104b8fdb",
+      recovering: false,
+      refireCount: 0,
+      scheduledFireTime: "06/30/11 15:59:01 EDT",
+      schedulerId: "MEGA",
+      schedulerName: "MegaScheduler",
+      triggerGroup: "group0",
+      triggerName: "t_1"
+    },
+    {
+      calendarName: "",
+      fireTime: "06/30/11 15:59:01 EDT",
+      jobGroup: "group1",
+      jobName: "j_1",
+      jobRunTime: 0,
+      nextFireTime: "06/30/11 16:00:01 EDT",
+      previousFireTime: "06/30/11 15:58:01 EDT",
+      quartzInstanceId: "f5c1edd6-0101-4c93-9162-58ca104b8fdb",
+      recovering: false,
+      refireCount: 0,
+      scheduledFireTime: "06/30/11 15:59:01 EDT",
+      schedulerId: "MEGA",
+      schedulerName: "MegaScheduler",
+      triggerGroup: "group1",
+      triggerName: "t_1"
+    },...
+}}}
+
+You can have the results sorted by passing a property name and direction.
