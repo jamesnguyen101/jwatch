@@ -7,10 +7,13 @@ http://localhost:8081/jwatch/
 
 == Getting all Quartz Instances ==
 
+This will return all currently configured Quartz Instances.
+
 {{{
 http://localhost:8081/jwatch/ui?action=get_all_instances
 }}}
 
+Sample output:
 {{{
 {
   data: [
@@ -29,13 +32,57 @@ http://localhost:8081/jwatch/ui?action=get_all_instances
 }
 }}}
 
+== Get all Schedulers for a Quartz Instance ==
+
+To obtain all Shcedulers for a Quartz Instance, you will need to know the Quartz Instance UUID, by first getting all Quartz instances.
+
+{{{
+http://localhost:8081/jwatch/ui?action=get_schedulers&uuid=<UUID>
+}}}
+
+Sample output:
+{{{
+{
+  success: true,
+  data: [
+    {
+      instanceId: "AUTO2",
+      jobStoreClassName: "org.quartz.simpl.RAMJobStore",
+      name: "ASmallScheduler",
+      objectName: {
+        canonicalKeyPropertyListString: "instance=AUTO2,name=ASmallScheduler,type=QuartzScheduler",
+        canonicalName: "quartz:instance=AUTO2,name=ASmallScheduler,type=QuartzScheduler",
+        domain: "quartz",
+        domainPattern: false,
+        keyPropertyList: {
+          instance: "AUTO2",
+          name: "ASmallScheduler",
+          type: "QuartzScheduler"
+        },
+        keyPropertyListString: "type=QuartzScheduler,name=ASmallScheduler,instance=AUTO2",
+        pattern: false,
+        propertyListPattern: false,
+        propertyPattern: false,
+        propertyValuePattern: false
+      },
+      quartzInstanceUUID: "f5c1edd6-0101-4c93-9162-58ca104b8fdb",
+      shutdown: false,
+      standByMode: false,
+      started: true,
+      threadPoolClassName: "org.quartz.simpl.SimpleThreadPool",
+      threadPoolSize: 3,
+      uuidInstance: "f5c1edd6-0101-4c93-9162-58ca104b8fdb@@AUTO2",
+      version: "2.0.0"
+    },
+}}}
+
 == Job Monitoring API ==
 
 The job monitoring API aggregates all jobs executing across all of your configured Quartz Instances. 
 
 _Currently there is no capability available to filter or sort results by Quartz Instance or Scheduler. This will be added in a future release._
 
-== Getting all Executed Jobs in Queue ==
+=== Getting all Executed Jobs in Queue ===
 
 To obtain all the jobs executed and sitting in the queue:
 {{{
