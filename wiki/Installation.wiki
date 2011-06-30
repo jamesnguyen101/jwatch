@@ -6,9 +6,9 @@
   # Get the most recent WAR file from the [http://code.google.com/p/jwatch/downloads/list Downloads Section]. It should be labeled something like jwatch-(VERSION).zip
   # Unpack the zip file and deploy the war within it to your application server.
   # Point your browser to http://HOST:PORT/jwatch
-  # Note: You must have JMX enabled for JWatch to communicate with your Quartz instances: 
+  # Note: You must have JMX enabled in *your* application for JWatch to communicate with your Quartz instances: 
 
-== Creating a Quartz Monitor Connection ==
+== Configuring JMX in your Application ==
 
 JWatch communicates with Quartz Instances using JMX, so the JVM Quartz is running on, will have to have JMX enabled, *and* Quartz must also be exposing its internal MBeans.
 
@@ -20,6 +20,12 @@ Sample JVM parameters:
 -Dcom.sun.management.jmxremote.authenticate=false
 -Dorg.quartz.scheduler.jmx.export=true
 }}}
+
+== Creating a Quartz Monitor ==
+
+  # Click the "Add New Quartz Instance" link on the top-right
+<img src="http://jwatch.googlecode.com/svn/trunk/site/images/ss/addinstance.png"/>
+  # aaaa
 
 = Configuration Options =
 
