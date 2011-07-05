@@ -7,4 +7,24 @@
     <listener>
         <listener-class>org.qtest.QuartzInit</listener-class>
     </listener>
+    <context-param>
+        <param-name>schedulers</param-name>
+        <param-value>3</param-value>
+        <description>How many Quartz Schedulers to create.</description>
+    </context-param>
+    <context-param>
+        <param-name>groups</param-name>
+        <param-value>3</param-value>
+        <description>How many Groups per Scheduler to create.</description>
+    </context-param>
+    <context-param>
+        <param-name>jobs</param-name>
+        <param-value>5</param-value>
+        <description>How many Jobs per Group to create.</description>
+    </context-param>
+    <context-param>
+        <param-name>triggers</param-name>
+        <param-value>2</param-value>
+        <description>How many Triggers per Job to create.</description>
+    </context-param>
 </web-app>
