@@ -30,50 +30,62 @@ import java.util.LinkedList;
  */
 public class EventService
 {
-   public static final int DEFAULT_MAX_EVENT_LIST_SIZE = 10;
+    public static final int DEFAULT_MAX_EVENT_LIST_SIZE = 1000;
+    public static final int DEFAULT_MAX_SHOW_EVENT_LIST_SIZE = 100;
 
-   private static LinkedList<JobEvent> eventList;
-   private static int maxEventListSize;
+    private static LinkedList<JobEvent> eventList;
+    private static int maxEventListSize;
+    private static int maxShowEventListSize;
 
-   public static LinkedList<JobEvent> getEventList()
-   {
-      return eventList;
-   }
+    public static LinkedList<JobEvent> getEventList()
+    {
+        return eventList;
+    }
 
-   public static int getMaxEventListSize()
-   {
-      return maxEventListSize;
-   }
+    public static int getMaxEventListSize()
+    {
+        return maxEventListSize;
+    }
 
-   public static void setMaxEventListSize(int maxEventListSize)
-   {
-      EventService.maxEventListSize = maxEventListSize;
-   }
+    public static int getMaxShowEventListSize()
+    {
+        return maxShowEventListSize;
+    }
 
-   public static void addEvent(JobEvent event)
-   {
-      if (eventList == null)
-      {
-         eventList = new LinkedList<JobEvent>();
-      }
+    public static void setMaxShowEventListSize(int maxShowEventListSize)
+    {
+        EventService.maxShowEventListSize = maxShowEventListSize;
+    }
 
-      // add event to the top of the list
-      eventList.addFirst(event);
+    public static void setMaxEventListSize(int maxEventListSize)
+    {
+        EventService.maxEventListSize = maxEventListSize;
+    }
 
-      // trim the list to size
-      resizeEventList();
-   }
+    public static void addEvent(JobEvent event)
+    {
+        if (eventList == null)
+        {
+            eventList = new LinkedList<JobEvent>();
+        }
 
-   private static void resizeEventList()
-   {
-      if (eventList.size() > maxEventListSize)
-      {
-         eventList.removeLast();
-         resizeEventList();
-      }
-      else
-      {
-         return;
-      }
-   }
+        // add event to the top of the list
+        eventList.addFirst(event);
+
+        // trim the list to size
+        resizeEventList();
+    }
+
+    private static void resizeEventList()
+    {
+        if (eventList.size() > maxEventListSize)
+        {
+            eventList.removeLast();
+            resizeEventList();
+        }
+        else
+        {
+            return;
+        }
+    }
 }

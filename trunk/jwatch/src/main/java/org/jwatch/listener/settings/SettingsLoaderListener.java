@@ -24,12 +24,18 @@ import org.apache.log4j.Logger;
 import org.jwatch.domain.instance.QuartzInstance;
 import org.jwatch.domain.instance.QuartzInstanceService;
 import org.jwatch.listener.notification.EventService;
+import org.jwatch.persistence.ConnectionUtil;
+import org.jwatch.util.SettingsUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -41,52 +47,110 @@ import java.util.Map;
  */
 public class SettingsLoaderListener implements ServletContextListener
 {
-   static Logger log = Logger.getLogger(SettingsLoaderListener.class);
+    static Logger log = Logger.getLogger(SettingsLoaderListener.class);
+    ConnectionUtil connectionUtil;
 
-   public void contextInitialized(ServletContextEvent event)
-   {
-      try
-      {
-         log.info("Starting Settings Load...");
-         long start = Calendar.getInstance().getTimeInMillis();
+    public void contextInitialized(ServletContextEvent event)
+    {
+        try
+        {
+            log.info("Starting Settings Load...");
+            long start = Calendar.getInstance().getTimeInMillis();
 
-         ServletContext sc = event.getServletContext();
-         if (sc != null)
-         {
-            String sMaxEvents = sc.getInitParameter("maxevents");
-            int maxEvents = NumberUtils.toInt(sMaxEvents, EventService.DEFAULT_MAX_EVENT_LIST_SIZE);
-            sc.setAttribute("maxevents", maxEvents);      // expose to other servlets
-            EventService.setMaxEventListSize(maxEvents);
-         }
+            ServletContext sc = event.getServletContext();
+            if (sc != null)
+            {
+                String sMaxEvents = sc.getInitParameter("maxevents");
+                int maxEvents = NumberUtils.toInt(sMaxEvents, EventService.DEFAULT_MAX_EVENT_LIST_SIZE);
+                sc.setAttribute("maxevents", maxEvents);      // expose to other servlets
+                EventService.setMaxEventListSize(maxEvents);
 
-         QuartzInstanceService.initQuartzInstanceMap();
+                String sMaxShowEvents = sc.getInitParameter("maxshowevents");
+                int maxShowEvents = NumberUtils.toInt(sMaxShowEvents, EventService.DEFAULT_MAX_SHOW_EVENT_LIST_SIZE);
+                sc.setAttribute("maxshowevents", maxShowEvents);      // expose to other servlets
+                EventService.setMaxShowEventListSize(maxShowEvents);
+            }
 
-         long end = Calendar.getInstance().getTimeInMillis();
-         log.info("Settings startup completed in: " + (end - start) + " ms");
-      }
-      catch (Throwable t)
-      {
-         log.error("Failed to initialize Settings.", t);
-      }
-   }
+            // load config file and instances
+            QuartzInstanceService.initQuartzInstanceMap();
 
-   public void contextDestroyed(ServletContextEvent event)
-   {
-      log.info("Shutting down SettingsLoaderListener service...");
-      Map qMap = QuartzInstanceService.getQuartzInstanceMap();
-      for (Iterator it = qMap.entrySet().iterator(); it.hasNext();)
-      {
-         Map.Entry entry = (Map.Entry) it.next();
-         String k = (String) entry.getKey();
-         QuartzInstance quartzInstance = (QuartzInstance) qMap.get(k);
-         try
-         {
-            quartzInstance.getJmxConnector().close();
-         }
-         catch (IOException e)
-         {
-            log.error("Failed to close Connection: " + quartzInstance, e);
-         }
-      }
-   }
+            SettingsUtil.loadProperties();
+
+            // connect/start DB
+            connectionUtil = new ConnectionUtil(SettingsUtil.getDBFilePath());
+            StringBuffer jwatchLog = new StringBuffer();
+            jwatchLog.append("CREATE TEXT TABLE IF NOT EXISTS JWATCHLOG (")
+                    .append("id INTEGER IDENTITY,")
+                    .append("CALENDARNAME VARCHAR(256),")
+                    .append("JOBGROUP VARCHAR(256),")
+                    .append("JOBNAME VARCHAR(256),")
+                    .append("SCHEDULERNAME VARCHAR(256),")
+                    .append("TRIGGERGROUP VARCHAR(256),")
+                    .append("TRIGGERNAME VARCHAR(256),")
+                    .append("FIRETIME DATE,")
+                    .append("NEXTFIRETIME  DATE,")
+                    .append("PREVIOUSFIRETIME  DATE,")
+                    .append("SCHEDULEDFIRETIME  DATE,")
+                    .append("RECOVERING BOOLEAN,")
+                    .append("JOBRUNTIME BIGINT, ")
+                    .append("REFIRECOUNT INTEGER, ")
+                    .append("SCHEDULERID VARCHAR(256),")
+                    .append("QUARTZINSTANCEID VARCHAR(256)")
+                    .append(")");
+            connectionUtil.update(jwatchLog.toString());
+
+            long end = Calendar.getInstance().getTimeInMillis();
+            log.info("Settings startup completed in: " + (end - start) + " ms");
+        }
+        catch (Throwable t)
+        {
+            log.error("Failed to initialize Settings.", t);
+        }
+    }
+
+    public void contextDestroyed(ServletContextEvent event)
+    {
+        log.info("Shutting down SettingsLoaderListener service...");
+        Map qMap = QuartzInstanceService.getQuartzInstanceMap();
+        for (Iterator it = qMap.entrySet().iterator(); it.hasNext(); )
+        {
+            Map.Entry entry = (Map.Entry) it.next();
+            String k = (String) entry.getKey();
+            QuartzInstance quartzInstance = (QuartzInstance) qMap.get(k);
+            try
+            {
+                quartzInstance.getJmxConnector().close();
+            }
+            catch (IOException e)
+            {
+                log.error("Failed to close Connection: " + quartzInstance, e);
+            }
+        }
+
+        try
+        {
+            connectionUtil.shutdown();
+        }
+        catch (SQLException e)
+        {
+            log.error("Failed closing DB", e);
+        }
+
+        // This manually deregisters JDBC driver, which prevents Tomcat 7 from complaining about memory leaks wrt this class
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements())
+        {
+            Driver driver = drivers.nextElement();
+            try
+            {
+                DriverManager.deregisterDriver(driver);
+                log.info(String.format("deregistering jdbc driver: %s", driver));
+            }
+            catch (SQLException e)
+            {
+                log.error(String.format("Error deregistering driver %s", driver), e);
+            }
+        }
+
+    }
 }

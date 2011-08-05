@@ -8,17 +8,9 @@
         <servlet-name>JWatchUIServlet</servlet-name>
         <servlet-class>org.jwatch.servlet.JWatchUIServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>JWatchWSServlet</servlet-name>
-        <servlet-class>org.jwatch.servlet.JWatchWSServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>JWatchUIServlet</servlet-name>
         <url-pattern>/ui</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>JWatchWSServlet</servlet-name>
-        <url-pattern>/ws</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>
@@ -30,6 +22,11 @@
         <param-name>maxevents</param-name>
         <param-value>1000</param-value>
         <description>How many job execution events to keep in the queue.</description>
+    </context-param>
+    <context-param>
+        <param-name>maxshowevents</param-name>
+        <param-value>50</param-value>
+        <description>How many job execution events from the queue to show in the UI.</description>
     </context-param>
 
     <listener>
